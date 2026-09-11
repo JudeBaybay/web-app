@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>For Isha</title>
+    <link rel="icon" type="image/png" href="../assets/favicon.png">
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+
+  <body class="ticket-page">
+    <div class="emoji-waterfall" aria-hidden="true"></div>
+
+    <main class="phone-screen">
+      <div class="ticket-wrapper">
+        <section class="ticket-card" id="ticket">
+          <h1 class="ticket-title">
+            YOUR<br />
+            TICKET !
+          </h1>
+
+          <div class="ticket-information">
+            <hr class="line-dash">
+            <div class="ticket-spacing">
+              <p>
+                <strong>Date:</strong>
+                <span id="ticketDate"></span>
+                <br />
+                <br />
+                <strong>Time:</strong>
+                <span id="ticketTime"></span>
+              </p>
+            </div>
+          <hr class="line-dash">
+          </div>
+
+          <div class="see-you">
+            SEE<br />
+            YOU!
+          </div>
+
+          <div class="happy-cat">
+            <img
+              id="happyCatImage"
+              src="../assets/smiling-cat.jpg"
+              alt="Happy cat"
+            />
+          </div>
+        </section>
+
+        <br />
+
+        <button type="button" id="downloadButton" class="download-button">
+          Download as IMAGE
+        </button>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="../js/emoji-waterfall.js"></script>
+    <script src="../js/ticket.js"></script>
+  </body>
+</html>

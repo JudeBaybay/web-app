@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>For Isha</title>
+    <link rel="icon" type="image/png" href="../assets/favicon.png" />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+
+  <body class="date-page">
+    <div class="emoji-waterfall" aria-hidden="true"></div>
+
+    <main class="phone-screen">
+      <div class="invitation-container">
+        <div class="sad-cat-box">
+          <div class="sad-cat-container">
+            <img
+              id="dateImage"
+              src="../assets/cat-thumbs-up.jpg"
+              alt="Date image"
+            />
+          </div>
+        </div>
+
+        <section class="date-card">
+          <h1 class="date-title">
+            Pick your<br />
+            desired<br />
+            date &amp; time!
+          </h1>
+
+          <div class="selection-row">
+            <button type="button" id="dateButton" class="picker-button">
+              Click to<br />
+              set date
+            </button>
+
+            <div id="dateValue" class="selection-value"></div>
+          </div>
+
+          <div class="selection-row">
+            <button type="button" id="timeButton" class="picker-button">
+              Click to<br />
+              set time
+            </button>
+
+            <div id="timeValue" class="selection-value"></div>
+          </div>
+
+          <button type="button" id="proceedButton" class="proceed-button">
+            Proceed →
+          </button>
+
+          <p id="errorMessage" class="error-message"></p>
+        </section>
+      </div>
+
+      <div id="dateModal" class="picker-overlay hidden">
+        <div class="picker-modal">
+          <div class="date-picker-header">
+            <h2>Select Date</h2>
+          </div>
+
+          <div class="date-selector-row">
+            <div class="date-selector month-selector-wrap">
+              <select
+                id="monthSelector"
+                aria-label="Select month"
+                class="native-month-selector"
+              >
+                <option value="8">September</option>
+                <option value="9">October</option>
+              </select>
+              <button
+                type="button"
+                id="monthDropdownButton"
+                class="month-dropdown-button"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                aria-label="Select month"
+              >
+                <span id="monthDropdownLabel">September</span>
+                <span class="selector-arrow" aria-hidden="true"></span>
+              </button>
+              <div
+                id="monthDropdownMenu"
+                class="month-dropdown-menu"
+                role="listbox"
+                aria-label="Available months"
+              >
+                <button
+                  type="button"
+                  class="month-dropdown-option"
+                  data-month="8"
+                  role="option"
+                >
+                  September
+                </button>
+                <button
+                  type="button"
+                  class="month-dropdown-option"
+                  data-month="9"
+                  role="option"
+                >
+                  October
+                </button>
+              </div>
+            </div>
+
+            <div class="date-selector">
+              <span id="currentYear"></span>
+            </div>
+          </div>
+
+          <div class="weekdays">
+            <span class="sunday">SUN</span>
+            <span>MON</span>
+            <span>TUE</span>
+            <span>WED</span>
+            <span>THU</span>
+            <span>FRI</span>
+            <span>SAT</span>
+          </div>
+
+          <div id="calendarGrid" class="calendar-grid"></div>
+
+          <button type="button" id="closeDateModal" class="modal-done">
+            Confirm
+          </button>
+        </div>
+      </div>
+
+      <div id="timeModal" class="picker-overlay hidden">
+        <div class="time-picker-modal">
+          <h2 class="time-picker-title">ENTER TIME</h2>
+
+          <div class="time-picker-body">
+            <div class="time-field-container">
+              <div id="hourField" class="time-field active">
+                <input
+                  type="number"
+                  id="hourInput"
+                  min="1"
+                  max="12"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  aria-label="Hour"
+                />
+              </div>
+
+              <span class="time-field-label"> Hour </span>
+            </div>
+
+            <div class="time-separator">:</div>
+
+            <div class="time-field-container">
+              <div id="minuteField" class="time-field">
+                <input
+                  type="number"
+                  id="minuteInput"
+                  min="0"
+                  max="59"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  aria-label="Minute"
+                />
+              </div>
+
+              <span class="time-field-label"> Minute </span>
+            </div>
+
+            <div class="period-selector">
+              <button type="button" id="amButton" class="period-button">
+                AM
+              </button>
+
+              <button type="button" id="pmButton" class="period-button">
+                PM
+              </button>
+            </div>
+          </div>
+
+          <div id="timeError" class="time-error"></div>
+
+          <div class="time-picker-footer">
+            <div class="clock-icon"></div>
+
+            <div class="time-picker-actions">
+              <button type="button" id="cancelTimeButton" class="time-action">
+                CANCEL
+              </button>
+
+              <button type="button" id="okTimeButton" class="time-action">
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="../js/emoji-waterfall.js"></script>
+    <script src="../js/date.js"></script>
+  </body>
+</html>

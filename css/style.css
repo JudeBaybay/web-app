@@ -1,0 +1,2178 @@
+@import url("https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap");
+
+:root {
+  --background: #f6f3e9;
+  --card: #f7f4ea;
+  --dark: #2b2823;
+  --border: #2b2823;
+
+  --green: #b8cba5;
+  --green-dark: #9eb68a;
+
+  --pink: #d98f98;
+  --pink-light: #f1d9dc;
+
+  --cream: #fffdf6;
+  --soft-cream: #f3eee1;
+
+  --time-purple: #7c5a68;
+  --time-purple-light: #eadde1;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  color: var(--dark);
+  font-family: "Patrick Hand", cursive;
+}
+
+.landing-page,
+.date-page,
+.ticket-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--background);
+  background-image: url("https://png.pngtree.com/thumb_back/fh260/background/20231017/pngtree-light-pink-old-rose-recycled-craft-paper-textured-background-image_13625147.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  overflow: hidden;
+}
+
+.phone-screen {
+  width: min(82vw, 320px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.landing-card {
+  width: min(92vw, 375px);
+  min-height: 390px;
+  padding: 25px 22px 22px;
+  background: var(--card);
+  border: 3px solid var(--border);
+  border-radius: 15px;
+  box-shadow: 5px 5px 0 rgba(43, 40, 35, 0.35);
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.question-title {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 45px;
+  line-height: 1.15;
+  font-style: italic;
+  font-weight: 700;
+  text-align: center;
+}
+
+.answer-container {
+  margin-top: 65px;
+  margin-bottom: 25px;
+  width: 100%;
+  min-height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  position: relative;
+  overflow: visible;
+}
+
+.answer-button {
+  min-width: 95px;
+  min-height: 65px;
+  padding: 0 10px;
+  border: 2.5px solid var(--border);
+  border-radius: 7px;
+  box-shadow: 2px 2px 0 var(--border);
+  font-family: "Patrick Hand", cursive;
+  font-size: 35px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    width 0.25s ease,
+    height 0.25s ease,
+    transform 0.25s ease;
+}
+
+.yes-button {
+  width: 62px;
+  height: 35px;
+  background: var(--green);
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+  transform-origin: center center;
+}
+
+.no-button {
+  width: 62px;
+  height: 35px;
+  background: var(--pink);
+  position: relative;
+  z-index: 9999;
+  flex-shrink: 0;
+}
+
+.no-button.floating {
+  position: fixed;
+  z-index: 99999;
+  margin: 0;
+}
+
+.answer-button\:active {
+  box-shadow: none;
+}
+
+.sad-cat-box {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 13px;
+  border: 2.5px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;
+  background: #ebe7dc;
+  box-shadow: 2px 2px 0 var(--border);
+}
+
+.sad-cat-container {
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  background: #ebe7dc;
+}
+
+.sad-cat-container img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.date-page {
+  padding: 20px;
+}
+
+.date-page .phone-screen {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.date-card {
+  width: min(92vw, 420px);
+  min-height: 453px;
+  padding: 31px 34px 30px;
+  background: var(--card);
+  border: 3px solid var(--border);
+  border-radius: 15px;
+  box-shadow: 5px 5px 0 rgba(43, 40, 35, 0.35);
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.date-title {
+  width: 100%;
+  margin: 0 0 30px;
+  color: var(--dark);
+  font-family: "Playfair Display", Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 45px;
+  line-height: 0.94;
+  text-align: center;
+}
+
+.selection-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.picker-button {
+  width: 100%;
+  height: 64px;
+  min-height: 64px;
+  padding: 7px 8px;
+  border: 2.5px solid var(--border);
+  border-radius: 9px;
+  background: var(--green);
+  box-shadow: 3px 3px 0 var(--border);
+  color: var(--dark);
+  font-family: "Patrick Hand", cursive;
+  font-size: 19px;
+  line-height: 0.95;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.picker-button\:hover {
+  background: var(--green-dark);
+}
+
+.picker-button\:active {
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.selection-value {
+  width: 100%;
+  height: 64px;
+  min-height: 64px;
+  padding: 7px 8px;
+  border: 2.5px solid var(--border);
+  border-radius: 9px;
+  background: var(--pink);
+  box-shadow: 3px 3px 0 var(--border);
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Patrick Hand", cursive;
+  font-size: 19px;
+  line-height: 1;
+  font-weight: 700;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.proceed-button {
+  display: block;
+  width: clamp(115px, 42%, 135px);
+  height: clamp(45px, 10vw, 45px);
+  min-height: 40px;
+  margin: 22px auto 0;
+  padding: 4px 8px;
+  border: 2.5px solid var(--border);
+  border-radius: 9px;
+  background: var(--green);
+  box-shadow: 3px 3px 0 var(--border);
+  color: var(--dark);
+  font-family: "Patrick Hand", cursive;
+  font-size: clamp(25px, 5vw, 20px);
+  line-height: 1;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.proceed-button\:hover {
+  background: var(--green-dark);
+}
+
+.proceed-button\:active {
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.error-message {
+  width: 100%;
+  min-height: 18px;
+  margin-top: 8px;
+  color: #a3343b;
+  font-family: "Patrick Hand", cursive;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  background: rgba(43, 40, 35, 0.55);
+}
+
+.picker-modal {
+  width: min(92vw, 420px);
+  background: var(--card);
+  border: 3px solid var(--border);
+  border-radius: 15px;
+  box-shadow: 5px 5px 0 rgba(43, 40, 35, 0.35);
+  padding: 29px 34px 30px;
+}
+
+.date-picker-header h2 {
+  margin: 0 0 24px;
+  color: var(--dark);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 29px;
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  text-align: left;
+}
+
+.date-selector-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.date-selector {
+  flex: 1;
+  height: 48px;
+  padding: 0 14px;
+  border: 2px solid #d8d0c0;
+  border-radius: 10px;
+  background: var(--soft-cream);
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Patrick Hand", cursive;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.date-selector select {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--dark);
+  font-family: "Patrick Hand", cursive;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  text-align-last: center;
+  cursor: pointer;
+  appearance: none;
+}
+
+.month-selector-wrap {
+  position: relative;
+  padding: 0;
+  overflow: visible;
+  z-index: 20;
+}
+
+.native-month-selector {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.month-dropdown-button {
+  width: 100%;
+  height: 100%;
+  min-height: 48px;
+  border: 0;
+  outline: none;
+  padding: 0 38px 0 14px;
+  background: transparent;
+  color: var(--dark);
+  font-family: "Patrick Hand", cursive;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.selector-arrow {
+  display: block;
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-right: 2px solid var(--dark);
+  border-bottom: 2px solid var(--dark);
+  transform: translateY(-65%) rotate(45deg);
+  transition: transform 0.18s ease;
+}
+
+.month-selector-wrap.open .selector-arrow {
+  transform: translateY(-20%) rotate(225deg);
+}
+
+.month-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 7px);
+  left: 0;
+  width: 100%;
+  padding: 6px;
+  background: var(--soft-cream);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 rgba(43, 40, 35, 0.28);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-5px);
+  transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
+}
+
+.month-selector-wrap.open .month-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.month-dropdown-option {
+  display: block;
+  width: 100%;
+  min-height: 42px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--dark);
+  font-family: "Patrick Hand", cursive;
+  font-size: 17px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+}
+
+.month-dropdown-option:hover,
+.month-dropdown-option:focus-visible {
+  background: #e9dfcc;
+  outline: none;
+}
+
+.month-dropdown-option.active {
+  background: #dfd3bc;
+}
+
+@media (max-width: 430px) {
+  .month-dropdown-button {
+    font-size: 16px;
+  }
+
+  .month-dropdown-option {
+    font-size: 16px;
+    min-height: 40px;
+  }
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+  color: var(--dark);
+  text-align: center;
+  font-family: "Patrick Hand", cursive;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.weekdays .sunday {
+  color: #d98f98;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  column-gap: 4px;
+  row-gap: 9px;
+}
+
+.calendar-grid button {
+  width: 100%;
+  height: 31px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--dark);
+  font-family: "Patrick Hand", cursive;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.calendar-grid button\:hover {
+  background: var(--pink-light);
+}
+
+.calendar-grid button.sunday {
+  color: #d98f98;
+}
+
+.calendar-grid button.selected {
+  background: #d98f98;
+  border-color: var(--border);
+  color: var(--dark);
+  font-weight: 700;
+  position: relative;
+}
+
+.calendar-grid button.selected::after {
+  display: none;
+}
+
+.calendar-grid button.disabled {
+  color: #cfc9bd;
+  cursor: default;
+}
+
+.calendar-grid button.disabled\:hover {
+  background: transparent;
+}
+
+.modal-done {
+  display: block;
+  width: 100%;
+  height: 51px;
+  margin: 26px auto 0;
+  border: 2.5px solid var(--border);
+  border-radius: 11px;
+  background: var(--green);
+  box-shadow: 3px 3px 0 var(--border);
+  color: var(--dark);
+  font-family: "Patrick Hand", cursive;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.modal-done\:hover {
+  background: var(--green-dark);
+}
+
+.modal-done\:active {
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.time-picker-modal {
+  width: min(92vw, 420px);
+  min-height: 453px;
+  padding: 31px 34px 27px;
+  background: var(--card);
+  border: 3px solid var(--border);
+  border-radius: 15px;
+  box-shadow: 5px 5px 0 rgba(43, 40, 35, 0.35);
+  font-family: "Patrick Hand", cursive;
+}
+
+.time-picker-title {
+  margin-bottom: 38px;
+  color: var(--dark);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 22px;
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-align: left;
+}
+
+.time-picker-body {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 7px;
+}
+
+.time-field-container {
+  display: flex;
+  flex-direction: column;
+  width: 118px;
+}
+
+.time-field {
+  width: 100%;
+  height: 125px;
+  border: 2.5px solid #cfc7b9;
+  border-radius: 11px;
+  background: #eee9dd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.time-field.active {
+  border-color: var(--border);
+  background: var(--cream);
+  box-shadow: 3px 3px 0 #d98f98;
+}
+
+.time-field.active::after {
+  display: none;
+}
+
+.time-field input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--dark);
+  text-align: center;
+  font-family: "Patrick Hand", cursive;
+  font-size: 78px;
+  font-weight: 400;
+  padding: 0;
+}
+
+.time-field input::-webkit-inner-spin-button,
+.time-field input::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.time-field input[type="number"] {
+  appearance: textfield;
+}
+
+.time-field-label {
+  margin-top: 9px;
+  color: #766f65;
+  font-family: "Patrick Hand", cursive;
+  font-size: 17px;
+  font-weight: 400;
+  text-align: left;
+}
+
+.time-separator {
+  width: 18px;
+  height: 125px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dark);
+  font-family: "Patrick Hand", cursive;
+  font-size: 48px;
+  font-weight: 700;
+  padding-bottom: 8px;
+}
+
+.period-selector {
+  width: 80px;
+  height: 125px;
+  border: 2.5px solid var(--border);
+  border-radius: 11px;
+  background: var(--cream);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.period-button {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: var(--cream);
+  color: #766f65;
+  font-family: "Patrick Hand", cursive;
+  font-size: 25px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.period-button + .period-button {
+  border-top: 1.5px solid #cfc7b9;
+}
+
+.period-button.active {
+  background: var(--pink-light);
+  color: #9b5963;
+}
+
+.period-button\:hover {
+  background: #eadfd2;
+}
+
+.time-error {
+  min-height: 18px;
+  margin-top: 6px;
+  color: #a3343b;
+  font-family: "Patrick Hand", cursive;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.time-picker-footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 32px;
+}
+
+.clock-icon {
+  width: 39px;
+  height: 39px;
+  border: 3px solid transparent;
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+  visibility: hidden;
+}
+
+.clock-icon::before,
+.clock-icon::after {
+  display: none;
+}
+
+.time-picker-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(8px, 4vw, 18px);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.time-action {
+  width: clamp(70px, 22vw, 82px);
+  min-width: 0;
+  min-height: 42px;
+  height: clamp(38px, 10vw, 42px);
+  border: 2.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--pink-light);
+  box-shadow: 2px 2px 0 var(--border);
+  color: #9b5963;
+  font-family: "Patrick Hand", cursive;
+  font-size: clamp(15px, 4.5vw, 18px);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 6px;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.time-action\:hover {
+  background: var(--pink);
+  color: var(--dark);
+}
+
+.time-action\:active {
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+
+.ticket-page {
+  padding: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ticket-page .phone-screen {
+  width: 100%;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+.ticket-wrapper {
+  width: 100%;
+  max-width: 340px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+}
+
+.ticket-card {
+  position: relative;
+
+  width: min(340px, calc(100vw - 24px));
+  height: auto;
+  aspect-ratio: 340 / 560;
+
+  flex-shrink: 0;
+
+  padding: 20px 16px 16px;
+
+  background: #ebe9df;
+  border: 3px solid var(--border);
+  border-radius: 11px;
+  box-shadow: 3px 3px 0 var(--border);
+
+  overflow: hidden;
+}
+
+.ticket-title {
+  width: 100%;
+
+  margin: 0 0 15px;
+
+  font-family: "Playfair Display", Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+
+  font-size: clamp(30px, 11.8vw, 50px);
+  line-height: 0.92;
+
+  text-align: center;
+}
+
+.ticket-information {
+  width: fit-content;
+  height: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+
+  padding: 6px 0;
+
+  text-align: center;
+}
+
+.ticket-information p {
+  width: 100%;
+  font-size: 30px;
+  font-family: "Patrick Hand", cursive;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.ticket-spacing {
+  margin-top: 60px;
+  margin-bottom: 60px;
+}
+
+.line-dash {
+  border: none;
+  height: 1px;
+  color: #000000;
+  background-color: #000000;
+}
+
+.ticket-information strong {
+  font-weight: 700;
+}
+
+.ticket-information span {
+  font-weight: 400;
+}
+
+.see-you {
+  position: absolute;
+
+  left: clamp(20px, 7.5vw, 30px);
+  bottom: clamp(25px, 8vw, 50px);
+
+  margin: 0;
+
+  font-family: "Playfair Display", Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+
+  font-size: clamp(30px, 11.8vw, 50px);
+  line-height: 0.88;
+
+  text-align: left;
+}
+
+.happy-cat {
+  position: absolute;
+
+  right: clamp(14px, 4.3vw, 17px);
+  bottom: clamp(18px, 6vw, 32px);
+
+  width: clamp(80px, 31vw, 145px);
+  height: clamp(80px, 31vw, 145px);
+
+  border: 2.5px solid var(--border);
+  border-radius: 9px;
+
+  overflow: hidden;
+  background: #ebe7dc;
+}
+
+.happy-cat img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.download-button {
+  position: relative;
+
+  left: auto;
+  right: auto;
+  bottom: auto;
+
+  transform: none;
+
+  display: block;
+
+  width: clamp(125px, 55vw, 220px);
+  height: clamp(40px, 18vw, 80px);
+
+  margin: clamp(12px, 4vw, 16px) auto 0;
+
+  padding: 5px 8px;
+
+  border: 2.5px solid var(--border);
+  border-radius: 7px;
+
+  background: var(--green);
+  box-shadow: 2px 2px 0 var(--border);
+
+  color: var(--dark);
+
+  font-family: "Patrick Hand", cursive;
+  font-size: clamp(14px, 6vw, 25px);
+  font-weight: 700;
+  line-height: 1;
+
+  cursor: pointer;
+
+  text-align: center;
+  white-space: normal;
+
+  flex-shrink: 0;
+
+  z-index: 5;
+}
+
+.download-button\:hover {
+  background: var(--green-dark);
+}
+
+.download-button\:active {
+  box-shadow: none;
+  transform: translateY(2px);
+}
+
+.emoji-waterfall {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.emoji-waterfall .falling-emoji {
+  position: absolute;
+  top: -80px;
+  left: 0;
+  display: block;
+  font-family:
+    "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+  will-change: transform;
+  animation-name: emojiFall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.landing-page > .emoji-waterfall,
+.date-page > .emoji-waterfall,
+.ticket-page > .emoji-waterfall {
+  z-index: 0;
+}
+
+.landing-page > .phone-screen,
+.date-page > .phone-screen,
+.ticket-page > .phone-screen {
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes emojiFall {
+  0% {
+    transform: translate3d(0, -100px, 0) rotate(0deg);
+    opacity: 0;
+  }
+
+  8% {
+    opacity: 0.5;
+  }
+
+  90% {
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: translate3d(var(--drift), calc(100vh + 160px), 0)
+      rotate(var(--rotation));
+    opacity: 0;
+  }
+}
+
+@media (max-width: 430px) {
+  /* Keep the invitation vertically centered without adding a viewport-height
+     dependent margin that can push the content below short phone screens. */
+  .invitation-container {
+    margin-bottom: 0;
+  }
+
+  .landing-card {
+    height: 375px;
+  }
+
+  .landing-card h1 {
+    font-size: 40px;
+  }
+
+  .sad-cat-box {
+    width: 175px;
+    height: 175px;
+    margin: 0 auto 13px;
+    border: 2.5px solid var(--border);
+    border-radius: 7px;
+    overflow: hidden;
+    background: #ebe7dc;
+    box-shadow: 2px 2px 0 var(--border);
+  }
+
+  .sad-cat-container {
+    width: 175px;
+    height: 175px;
+    overflow: hidden;
+    background: #ebe7dc;
+  }
+
+  .date-page {
+    padding: 12px;
+  }
+
+  .date-page .phone-screen {
+    width: 100%;
+  }
+
+  .date-card {
+    width: 100%;
+    max-width: 420px;
+    min-height: 453px;
+    padding: 30px 25px;
+  }
+
+  .date-title {
+    font-size: 40px;
+    line-height: 0.94;
+    margin-bottom: 29px;
+  }
+
+  .selection-row {
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .picker-button,
+  .selection-value {
+    height: 62px;
+    min-height: 62px;
+  }
+
+  .picker-button,
+  .selection-value {
+    font-size: 18px;
+  }
+
+  .proceed-button {
+    width: clamp(115px, 40vw, 120px);
+    height: clamp(45px, 11vw, 42px);
+    min-height: 36px;
+    margin-top: 17px;
+    font-size: clamp(25px, 5vw, 19px);
+  }
+
+  .error-message {
+    font-size: 12px;
+  }
+
+  .time-picker-modal {
+    padding-left: 25px;
+    padding-right: 25px;
+  }
+
+  .time-field-container {
+    width: 105px;
+  }
+
+  .period-selector {
+    width: 72px;
+  }
+
+  .time-field input {
+    font-size: 68px;
+  }
+
+  .period-button {
+    font-size: 23px;
+  }
+
+  .time-picker-actions {
+    gap: clamp(8px, 4vw, 22px);
+    margin-left: auto;
+  }
+
+  .time-action {
+    width: clamp(68px, 20vw, 80px);
+    height: clamp(36px, 10vw, 42px);
+    min-height: 36px;
+    font-size: clamp(14px, 4vw, 17px);
+  }
+
+  .ticket-page {
+    padding: 8px;
+  }
+
+  .ticket-page .phone-screen {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ticket-wrapper {
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .ticket-card {
+    width: min(340px, calc(100vw - 16px));
+    aspect-ratio: 340 / 560;
+    padding: 20px 16px 16px;
+  }
+
+  .ticket-title {
+    margin-bottom: 15px;
+  }
+
+  .ticket-information {
+    height: clamp(52px, 15.5vw, 65px);
+    padding: 8px 2px;
+  }
+
+  .see-you {
+    left: clamp(20px, 7.5vw, 30px);
+    bottom: clamp(25px, 8vw, 50px);
+  }
+
+  .happy-cat {
+    right: clamp(14px, 4.3vw, 17px);
+    bottom: clamp(18px, 6vw, 32px);
+  }
+
+  .download-button {
+    width: clamp(125px, 55vw, 220px);
+    height: clamp(40px, 18vw, 80px);
+    margin-top: clamp(12px, 4vw, 16px);
+  }
+}
+
+@media (max-width: 350px) {
+  .landing-card {
+    height: 375px;
+  }
+
+  .landing-card h1 {
+    font-size: 30px;
+  }
+
+  .sad-cat-box {
+    width: 175px;
+    height: 175px;
+    margin: 0 auto 13px;
+    border: 2.5px solid var(--border);
+    border-radius: 7px;
+    overflow: hidden;
+    background: #ebe7dc;
+    box-shadow: 2px 2px 0 var(--border);
+  }
+
+  .sad-cat-container {
+    width: 175px;
+    height: 175px;
+    overflow: hidden;
+    background: #ebe7dc;
+  }
+
+  .picker-modal {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .date-picker-header h2 {
+    font-size: 27px;
+  }
+
+  .date-selector {
+    font-size: 16px;
+  }
+
+  .date-page {
+    padding: 8px;
+  }
+
+  .date-page .phone-screen {
+    width: 100%;
+  }
+
+  .date-card {
+    width: 100%;
+    min-height: 453px;
+    padding: 20px 18px 0px;
+  }
+
+  .date-title {
+    font-size: 35px;
+    line-height: 0.94;
+    margin-bottom: 25px;
+  }
+
+  .selection-row {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .picker-button,
+  .selection-value {
+    height: 58px;
+    min-height: 58px;
+  }
+
+  .picker-button,
+  .selection-value {
+    font-size: 17px;
+  }
+
+  .proceed-button {
+    width: clamp(115px, 40vw, 120px);
+    height: clamp(45px, 11vw, 42px);
+    min-height: 36px;
+    margin-top: 17px;
+    font-size: clamp(25px, 5vw, 19px);
+  }
+
+  .error-message {
+    font-size: 12px;
+  }
+
+  .time-picker-modal {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .time-field-container {
+    width: 83px;
+  }
+
+  .period-selector {
+    width: 65px;
+  }
+
+  .time-field input {
+    font-size: 54px;
+  }
+
+  .period-button {
+    font-size: 20px;
+  }
+
+  .time-picker-actions {
+    gap: clamp(6px, 3vw, 10px);
+    margin-left: auto;
+  }
+
+  .time-action {
+    width: clamp(62px, 22vw, 70px);
+    height: clamp(34px, 10vw, 40px);
+    min-height: 34px;
+    font-size: clamp(13px, 4.5vw, 17px);
+    padding-left: 3px;
+    padding-right: 3px;
+  }
+
+  .ticket-page {
+    padding: 6px;
+  }
+
+  .ticket-page .phone-screen {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ticket-wrapper {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .ticket-card {
+    width: min(320px, calc(100vw - 12px));
+    aspect-ratio: 340 / 560;
+
+    padding: 18px 14px 14px;
+  }
+
+  .ticket-title {
+    font-size: clamp(28px, 11.8vw, 45px);
+    margin-bottom: 13px;
+  }
+
+  .ticket-information {
+    height: clamp(48px, 15.5vw, 58px);
+    padding: 7px 2px;
+  }
+
+  .see-you {
+    left: clamp(17px, 7vw, 25px);
+    bottom: clamp(22px, 7.5vw, 40px);
+  }
+
+  .happy-cat {
+    right: clamp(12px, 4.3vw, 16px);
+    bottom: clamp(17px, 5.8vw, 27px);
+  }
+
+  .download-button {
+    width: clamp(115px, 55vw, 190px);
+    height: clamp(38px, 17vw, 65px);
+
+    margin-top: clamp(11px, 4vw, 15px);
+  }
+}
+
+@media (max-width: 300px) {
+  .date-page {
+    padding: 6px;
+  }
+
+  .date-card {
+    width: 100%;
+    min-height: 453px;
+    padding: 25px 14px;
+  }
+
+  .date-title {
+    font-size: 35px;
+    line-height: 0.94;
+    margin-bottom: 40px;
+  }
+
+  .selection-row {
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .picker-button,
+  .selection-value {
+    height: 54px;
+    min-height: 54px;
+  }
+
+  .picker-button,
+  .selection-value {
+    font-size: 15px;
+  }
+
+  .proceed-button {
+    width: clamp(115px, 40vw, 120px);
+    height: clamp(45px, 11vw, 42px);
+    min-height: 36px;
+    margin-top: 17px;
+    font-size: clamp(25px, 5vw, 19px);
+  }
+
+  .time-picker-actions {
+    gap: 5px;
+    margin-left: auto;
+  }
+
+  .time-action {
+    width: clamp(58px, 21vw, 65px);
+    height: clamp(32px, 10vw, 38px);
+    min-height: 32px;
+    font-size: clamp(12px, 4.5vw, 16px);
+  }
+
+  .ticket-page {
+    padding: 4px;
+  }
+
+  .ticket-page .phone-screen {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ticket-wrapper {
+    width: 100%;
+    max-width: 285px;
+  }
+
+  .ticket-card {
+    width: min(285px, calc(100vw - 8px));
+    aspect-ratio: 340 / 560;
+
+    padding: 16px 12px 12px;
+  }
+
+  .ticket-title {
+    font-size: clamp(25px, 11.5vw, 38px);
+    margin-bottom: 11px;
+  }
+
+  .ticket-information {
+    height: clamp(43px, 15vw, 52px);
+    padding: 6px 1px;
+  }
+
+  .ticket-information p {
+    font-size: clamp(13px, 5.7vw, 19px);
+  }
+
+  .see-you {
+    left: clamp(13px, 6.5vw, 20px);
+    bottom: clamp(19px, 7vw, 30px);
+    font-size: clamp(24px, 11.5vw, 34px);
+  }
+
+  .happy-cat {
+    right: clamp(10px, 4vw, 14px);
+    bottom: clamp(15px, 5.5vw, 23px);
+    width: clamp(62px, 29vw, 92px);
+    height: clamp(62px, 29vw, 92px);
+  }
+
+  .download-button {
+    width: clamp(108px, 54vw, 165px);
+    height: clamp(36px, 16vw, 55px);
+    margin-top: clamp(9px, 3.5vw, 13px);
+    font-size: clamp(11px, 5.5vw, 18px);
+  }
+}
+
+/* Short mobile screens: reduce fixed vertical dimensions instead of letting
+   the content get clipped by the page's overflow boundary. */
+@media (max-width: 430px) and (max-height: 750px) {
+  .date-page,
+  .ticket-page {
+    min-height: 100dvh;
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .date-page {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .date-page .phone-screen {
+    align-items: center;
+  }
+
+  .date-page .invitation-container {
+    width: 100%;
+  }
+
+  .date-page .sad-cat-box,
+  .date-page .sad-cat-container {
+    width: clamp(125px, 38vw, 155px);
+    height: clamp(125px, 38vw, 155px);
+  }
+
+  .date-card {
+    min-height: 0;
+    padding: 18px 18px 16px;
+  }
+
+  .date-title {
+    font-size: clamp(31px, 9.5vw, 37px);
+    margin-bottom: 20px;
+  }
+
+  .selection-row {
+    gap: 7px;
+    margin-bottom: 9px;
+  }
+
+  .picker-button,
+  .selection-value {
+    height: 54px;
+    min-height: 54px;
+    font-size: 16px;
+  }
+
+  .proceed-button {
+    height: 40px;
+    min-height: 40px;
+    margin-top: 12px;
+  }
+
+  .error-message {
+    min-height: 14px;
+    margin-top: 5px;
+  }
+
+  .ticket-page .phone-screen {
+    justify-content: flex-start;
+  }
+
+  .ticket-wrapper {
+    max-width: min(340px, calc((100dvh - 85px) * 0.607143));
+  }
+
+  .ticket-card {
+    width: min(340px, calc(100vw - 16px), calc((100dvh - 85px) * 0.607143));
+  }
+
+  .download-button {
+    height: 48px;
+    margin-top: 10px;
+  }
+}
+
+@media (min-width: 700px) {
+  .landing-card {
+    width: 375px;
+  }
+
+  .date-page {
+    padding: 20px;
+  }
+
+  .date-page .phone-screen {
+    width: 100%;
+  }
+
+  .date-card {
+    width: 420px;
+    height: 430px;
+  }
+
+  .date-card h1 {
+    font-size: 30px;
+  }
+
+  .date-title {
+    margin-top: -30px;
+  }
+  .ticket-page {
+    padding: 20px;
+  }
+
+  .ticket-page .phone-screen {
+    width: 100%;
+    max-width: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+  }
+
+  .ticket-wrapper {
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .ticket-card {
+    width: 340px;
+    height: 560px;
+    aspect-ratio: auto;
+
+    min-width: 340px;
+    min-height: 560px;
+
+    max-width: 340px;
+    max-height: 560px;
+
+    padding: 20px 16px 16px;
+  }
+
+  .ticket-title {
+    font-size: 50px;
+  }
+
+  .ticket-information {
+    height: 65px;
+  }
+
+  .see-you {
+    left: 30px;
+    bottom: 50px;
+    font-size: 50px;
+  }
+
+  .happy-cat {
+    right: 17px;
+    bottom: 32px;
+    width: 145px;
+    height: 145px;
+  }
+
+  .download-button {
+    width: 220px;
+    height: 80px;
+
+    margin-top: 16px;
+
+    font-size: 25px;
+  }
+}
+
+
+/* Final mobile height-fit pass */
+/*
+   Keep the existing visual design, but let the vertical dimensions adapt to
+   short phone viewports instead of allowing fixed heights/min-heights to push
+   controls below the visible screen.
+*/
+@media (max-width: 430px) {
+  .landing-page,
+  .date-page,
+  .ticket-page {
+    min-height: 100dvh;
+    height: auto;
+  }
+
+  .landing-page {
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 8px;
+  }
+
+  .date-page,
+  .ticket-page {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .landing-page .phone-screen,
+  .date-page .phone-screen,
+  .ticket-page .phone-screen {
+    min-height: calc(100dvh - 16px);
+    height: auto;
+  }
+
+  /* Date screen: size the image and card from the available viewport height. */
+  .date-page .sad-cat-box,
+  .date-page .sad-cat-container {
+    width: clamp(105px, min(38vw, 21dvh), 175px);
+    height: clamp(105px, min(38vw, 21dvh), 175px);
+  }
+
+  .date-card {
+    min-height: 0;
+    height: auto;
+    padding: clamp(14px, 3.5dvh, 30px) clamp(14px, 6vw, 25px) clamp(12px, 3dvh, 24px);
+  }
+
+  .date-title {
+    font-size: clamp(29px, min(9.5vw, 4.8dvh), 40px);
+    margin-bottom: clamp(14px, 3.5dvh, 29px);
+  }
+
+  .selection-row {
+    gap: clamp(6px, 2vw, 10px);
+    margin-bottom: clamp(7px, 1.8dvh, 14px);
+  }
+
+  .picker-button,
+  .selection-value {
+    height: clamp(46px, min(15.5vw, 7.2dvh), 62px);
+    min-height: 0;
+    font-size: clamp(15px, 4.6vw, 18px);
+  }
+
+  .proceed-button {
+    height: clamp(36px, min(11vw, 5.2dvh), 45px);
+    min-height: 0;
+    margin-top: clamp(9px, 2.2dvh, 17px);
+  }
+
+  .error-message {
+    min-height: 0;
+    margin-top: clamp(3px, 0.8dvh, 8px);
+  }
+
+  /* Ticket screen: the ticket and its button must fit as one vertical unit. */
+  .ticket-page {
+    padding: clamp(4px, 1.5vw, 8px);
+  }
+
+  .ticket-page .phone-screen {
+    min-height: calc(100dvh - 8px);
+    justify-content: center;
+  }
+
+  .ticket-wrapper {
+    width: min(100%, 340px, calc((100dvh - 70px) * 0.607143));
+  }
+
+  .ticket-card {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 340 / 560;
+    padding: clamp(12px, 2.5dvh, 20px) clamp(10px, 4vw, 16px) clamp(10px, 2.2dvh, 16px);
+  }
+
+  .download-button {
+    width: clamp(108px, 55vw, 220px);
+    height: clamp(38px, min(18vw, 6dvh), 80px);
+    margin-top: clamp(8px, 2dvh, 16px);
+  }
+}
+
+/* Very short phones (e.g. 320x568 / 360x640). */
+@media (max-width: 430px) and (max-height: 700px) {
+  .landing-page .phone-screen,
+  .date-page .phone-screen,
+  .ticket-page .phone-screen {
+    min-height: 0;
+  }
+
+  .landing-page .phone-screen {
+    padding: 4px 0;
+  }
+
+  .landing-card {
+    min-height: 0;
+    height: clamp(330px, 65dvh, 375px);
+    padding: 16px 14px 14px;
+  }
+
+  .landing-card h1,
+  .question-title {
+    font-size: clamp(29px, 9.5vw, 40px);
+  }
+
+  .answer-container {
+    margin-top: clamp(35px, 8dvh, 55px);
+    margin-bottom: 14px;
+  }
+
+  .date-page {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  .date-page .sad-cat-box,
+  .date-page .sad-cat-container {
+    width: clamp(100px, 29dvh, 145px);
+    height: clamp(100px, 29dvh, 145px);
+  }
+
+  .date-card {
+    padding: 12px 14px 12px;
+  }
+
+  .date-title {
+    font-size: clamp(27px, 8.5vw, 35px);
+    margin-bottom: clamp(10px, 2.5dvh, 20px);
+  }
+
+  .picker-button,
+  .selection-value {
+    height: clamp(44px, 7dvh, 54px);
+    font-size: clamp(14px, 4.5vw, 17px);
+  }
+
+  .proceed-button {
+    height: 36px;
+    margin-top: 8px;
+  }
+
+  .ticket-page .phone-screen {
+    justify-content: flex-start;
+  }
+
+  .ticket-wrapper {
+    width: min(100%, 320px, calc((100dvh - 58px) * 0.607143));
+  }
+
+  .ticket-card {
+    padding: 10px 10px 10px;
+  }
+
+  .ticket-title {
+    margin-bottom: 9px;
+    font-size: clamp(25px, 11vw, 40px);
+  }
+
+  .ticket-spacing {
+    margin-top: clamp(25px, 6dvh, 45px);
+    margin-bottom: clamp(25px, 6dvh, 45px);
+  }
+
+  .ticket-information p {
+    font-size: clamp(14px, 6vw, 24px);
+  }
+
+  .see-you {
+    bottom: clamp(18px, 5dvh, 35px);
+    font-size: clamp(24px, 10.5vw, 40px);
+  }
+
+  .happy-cat {
+    bottom: clamp(14px, 4dvh, 27px);
+    width: clamp(58px, 24vw, 92px);
+    height: clamp(58px, 24vw, 92px);
+  }
+
+  .download-button {
+    height: clamp(36px, 6dvh, 48px);
+    margin-top: 7px;
+    font-size: clamp(11px, 5vw, 18px);
+  }
+}
+
+/* Extra-small phones. Keep every screen usable without horizontal overflow. */
+@media (max-width: 350px) and (max-height: 650px) {
+  .date-page .sad-cat-box,
+  .date-page .sad-cat-container {
+    width: 100px;
+    height: 100px;
+  }
+
+  .date-title {
+    font-size: 27px;
+    margin-bottom: 10px;
+  }
+
+  .picker-button,
+  .selection-value {
+    height: 42px;
+    font-size: 14px;
+  }
+
+  .selection-row {
+    margin-bottom: 6px;
+  }
+
+  .proceed-button {
+    height: 34px;
+    margin-top: 7px;
+    font-size: 18px;
+  }
+}
+
+/* Ticket page: preserve the desktop visual scale on phones up to 430px wide.
+   The ticket itself remains 340x560 (same as the >=700px design). Only the
+   outer page is allowed to scroll on short viewports; the ticket internals are
+   not scaled down at the 430px breakpoint. */
+@media (min-width: 351px) and (max-width: 699px) {
+  .ticket-page {
+    padding: 8px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .ticket-page .phone-screen {
+    width: 100%;
+    min-height: calc(100dvh - 16px);
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ticket-wrapper {
+    width: 340px;
+    max-width: 340px;
+    flex-shrink: 0;
+  }
+
+  .ticket-card {
+    width: 340px;
+    height: 560px;
+    min-width: 340px;
+    min-height: 560px;
+    max-width: 340px;
+    max-height: 560px;
+    aspect-ratio: auto;
+    padding: 20px 16px 16px;
+  }
+
+  .ticket-title {
+    font-size: 50px;
+    margin-bottom: 15px;
+  }
+
+  .ticket-information {
+    height: fit-content;
+    padding: 6px 0;
+  }
+
+  .ticket-information p {
+    font-size: 30px;
+  }
+
+  .ticket-spacing {
+    margin-top: 60px;
+    margin-bottom: 60px;
+  }
+
+  .see-you {
+    left: 30px;
+    bottom: 50px;
+    font-size: 50px;
+  }
+
+  .happy-cat {
+    right: 17px;
+    bottom: 32px;
+    width: 145px;
+    height: 145px;
+  }
+
+  .download-button {
+    width: 220px;
+    height: 80px;
+    margin-top: 16px;
+    font-size: 25px;
+  }
+}
+
+/* 350px and below: the ticket must fit the narrow viewport, so proportional
+   sizing is allowed here. This prevents horizontal overflow while leaving the
+   351-699px range visually identical to the desktop ticket. */
+@media (max-width: 350px) {
+  .ticket-page {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .ticket-page .phone-screen {
+    min-height: calc(100dvh - 8px);
+    height: auto;
+    justify-content: center;
+  }
+
+  .ticket-wrapper {
+    width: min(100%, calc(100vw - 8px));
+    max-width: 320px;
+  }
+
+  .ticket-card {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    aspect-ratio: 340 / 560;
+  }
+}
+
+
+/* Final ticket consistency pass — all narrow screens.
+   Keep the ticket's desktop proportions and typography. At widths below 351px,
+   scale the COMPLETE ticket unit uniformly instead of independently shrinking
+   fonts, images, spacing, and the button. This preserves the exact visual
+   relationships used by the 340x560 desktop ticket. */
+@media (max-width: 699px) {
+  .ticket-page {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .ticket-page .phone-screen {
+    width: 100%;
+    min-height: calc(100dvh - 16px);
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ticket-wrapper {
+    width: 340px;
+    max-width: none;
+    flex: 0 0 auto;
+    align-items: center;
+  }
+
+  .ticket-card {
+    width: 340px;
+    height: 560px;
+    min-width: 340px;
+    min-height: 560px;
+    max-width: 340px;
+    max-height: 560px;
+    aspect-ratio: auto;
+    padding: 20px 16px 16px;
+  }
+
+  .ticket-title {
+    font-size: 50px;
+    margin-bottom: 15px;
+  }
+
+  .ticket-information {
+    height: fit-content;
+    padding: 6px 0;
+  }
+
+  .ticket-information p {
+    font-size: 30px;
+  }
+
+  .ticket-spacing {
+    margin-top: 60px;
+    margin-bottom: 60px;
+  }
+
+  .see-you {
+    left: 30px;
+    bottom: 50px;
+    font-size: 50px;
+  }
+
+  .happy-cat {
+    right: 17px;
+    bottom: 32px;
+    width: 145px;
+    height: 145px;
+  }
+
+  .download-button {
+    width: 220px;
+    height: 80px;
+    margin-top: 16px;
+    font-size: 25px;
+  }
+}
+
+/* Below 351px the full-size 340px ticket cannot fit horizontally.
+   Scale the ENTIRE ticket + button as one unit so every visual element
+   remains proportional to the >=351px / desktop design. */
+@media (max-width: 350px) {
+  .ticket-page .phone-screen {
+    justify-content: flex-start;
+    padding-top: 8px;
+    padding-bottom: 16px;
+  }
+
+  .ticket-wrapper {
+    --ticket-scale: min(1, calc((100vw - 12px) / 340px));
+    width: 340px;
+    height: calc(656px * var(--ticket-scale));
+    transform: scale(var(--ticket-scale));
+    transform-origin: top center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .ticket-card {
+    width: 340px;
+    height: 560px;
+    min-width: 340px;
+    min-height: 560px;
+    max-width: 340px;
+    max-height: 560px;
+    aspect-ratio: auto;
+    padding: 20px 16px 16px;
+  }
+
+  .ticket-title {
+    font-size: 50px;
+    margin-bottom: 15px;
+  }
+
+  .ticket-information {
+    height: fit-content;
+    padding: 6px 0;
+  }
+
+  .ticket-information p {
+    font-size: 30px;
+  }
+
+  .ticket-spacing {
+    margin-top: 60px;
+    margin-bottom: 60px;
+  }
+
+  .see-you {
+    left: 30px;
+    bottom: 50px;
+    font-size: 50px;
+  }
+
+  .happy-cat {
+    right: 17px;
+    bottom: 32px;
+    width: 145px;
+    height: 145px;
+  }
+
+  .download-button {
+    width: 220px;
+    height: 80px;
+    margin-top: 16px;
+    font-size: 25px;
+  }
+}
