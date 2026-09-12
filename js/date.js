@@ -8,6 +8,12 @@ const timeValue = document.getElementById("timeValue");
 
 const proceedButton = document.getElementById("proceedButton");
 
+const scheduleButton = document.getElementById("scheduleButton");
+
+const scheduleModal = document.getElementById("scheduleModal");
+
+const closeScheduleModal = document.getElementById("closeScheduleModal");
+
 const errorMessage = document.getElementById("errorMessage");
 
 const dateModal = document.getElementById("dateModal");
@@ -525,6 +531,33 @@ cancelTimeButton.addEventListener("click", function () {
 okTimeButton.addEventListener("click", function () {
   saveTime();
 });
+
+if (scheduleButton && scheduleModal && closeScheduleModal) {
+  function closeSchedule() {
+    scheduleModal.classList.add("hidden");
+    document.body.classList.remove("schedule-modal-open");
+  }
+
+  scheduleButton.addEventListener("click", function () {
+    scheduleModal.classList.remove("hidden");
+    document.body.classList.add("schedule-modal-open");
+    closeScheduleModal.focus();
+  });
+
+  closeScheduleModal.addEventListener("click", closeSchedule);
+
+  scheduleModal.addEventListener("click", function (event) {
+    if (event.target === scheduleModal) {
+      closeSchedule();
+    }
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && !scheduleModal.classList.contains("hidden")) {
+      closeSchedule();
+    }
+  });
+}
 
 proceedButton.addEventListener("click", function () {
   if (!selectedDate || !selectedTime) {

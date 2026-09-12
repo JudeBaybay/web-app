@@ -53,6 +53,10 @@
             Proceed →
           </button>
 
+          <button type="button" id="scheduleButton" class="schedule-button">
+            Don't know jude's schedule? Click here!
+          </button>
+
           <p id="errorMessage" class="error-message"></p>
         </section>
       </div>
@@ -129,6 +133,25 @@
           <button type="button" id="closeDateModal" class="modal-done">
             Confirm
           </button>
+        </div>
+      </div>
+
+      <div id="scheduleModal" class="schedule-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="scheduleModalTitle">
+        <div class="schedule-modal">
+          <div class="schedule-modal-header">
+            <h2 id="scheduleModalTitle">Jude's Schedule</h2>
+            <button type="button" id="closeScheduleModal" class="schedule-close" aria-label="Close schedule">
+              ×
+            </button>
+          </div>
+
+          <div class="schedule-image-frame">
+            <img
+              src="../assets/jude-schedule.png"
+              alt="Jude's class schedule"
+              class="schedule-image"
+            />
+          </div>
         </div>
       </div>
 
