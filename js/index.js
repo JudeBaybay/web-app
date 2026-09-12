@@ -1,15 +1,9 @@
 const envelopeIntro = document.getElementById("envelopeIntro");
-
 const landingCard = document.querySelector(".landing-card");
 
 function openEnvelope() {
-  if (!envelopeIntro || envelopeIntro.classList.contains("opened")) {
-    return;
-  }
-
+  if (!envelopeIntro || envelopeIntro.classList.contains("opened")) return;
   envelopeIntro.classList.add("opened");
-
-  // Reveal the question after the envelope flap/letter animation.
   window.setTimeout(function () {
     envelopeIntro.classList.add("hidden");
     if (landingCard) {
@@ -21,7 +15,6 @@ function openEnvelope() {
 
 if (envelopeIntro) {
   envelopeIntro.addEventListener("click", openEnvelope);
-
   envelopeIntro.addEventListener("keydown", function (event) {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
@@ -31,206 +24,169 @@ if (envelopeIntro) {
 }
 
 const yesButton = document.getElementById("yesButton");
-
 const noButton = document.getElementById("noButton");
-
 const sadCatBox = document.getElementById("sadCatBox");
-
 const sadCatImage = document.getElementById("sadCatImage");
 
 const sadCatImages = [
-  "assets/sad-cat-1.jpg",
-
-  "assets/sad-cat-2.gif",
-
-  "assets/sad-cat-3.gif",
-
-  "assets/sad-cat-4.gif",
-
-  "assets/sad-cat-5.gif",
-
-  "assets/sad-cat-6.jpg",
-
-  "assets/sad-cat-7.png",
-
-  "assets/sad-cat-8.gif",
+  "assets/sad-cat-1.jpg", "assets/sad-cat-2.gif", "assets/sad-cat-3.gif",
+  "assets/sad-cat-4.gif", "assets/sad-cat-5.gif", "assets/sad-cat-6.jpg",
+  "assets/sad-cat-7.png", "assets/sad-cat-8.gif",
 ];
 
 let sadCatIndex = 0;
-
 let noClickCount = 0;
-
 let yesScale = 1;
 
-function getVisibleViewport() {
-  // Use the visual viewport when available so the button stays inside the
-  // portion of the page the user can actually see (important on mobile when
-  // browser UI, zoom, or orientation changes the visual viewport).
+/*
+ * The NO button is position:fixed after its first move.  Fixed elements use
+ * viewport coordinates, so the safest approach is to use the current layout
+ * viewport for placement and then verify the real transformed rectangle.
+ * This avoids mixing visualViewport offsets with fixed-position coordinates.
+ */
+function getNoButtonViewport() {
+  // getBoundingClientRect() and position:fixed are expressed in viewport
+  // coordinates. Prefer the visual viewport dimensions when available so
+  // mobile browser chrome/keyboard changes do not create an offset mismatch.
   const vv = window.visualViewport;
-  if (vv) {
-    return {
-      left: Math.max(0, vv.offsetLeft),
-      top: Math.max(0, vv.offsetTop),
-      right: Math.max(0, vv.offsetLeft + vv.width),
-      bottom: Math.max(0, vv.offsetTop + vv.height)
-    };
-  }
+  const width = Math.max(1, (vv && vv.scale === 1 ? vv.width : 0) || window.innerWidth || document.documentElement.clientWidth || 1);
+  const height = Math.max(1, (vv && vv.scale === 1 ? vv.height : 0) || window.innerHeight || document.documentElement.clientHeight || 1);
+  return { left: 0, top: 0, right: width, bottom: height };
+}
 
+function getRotatedBounds(width, height, degrees) {
+  const radians = Math.abs(degrees) * Math.PI / 180;
+  const cos = Math.abs(Math.cos(radians));
+  const sin = Math.abs(Math.sin(radians));
   return {
-    left: 0,
-    top: 0,
-    right: document.documentElement.clientWidth || window.innerWidth,
-    bottom: document.documentElement.clientHeight || window.innerHeight
+    width: width * cos + height * sin,
+    height: width * sin + height * cos,
   };
 }
 
-function placeNoButtonSafely(rotationDegrees) {
-  if (!noButton) return false;
+function getSafeNoPlacement() {
+  if (!noButton) return null;
 
-  const viewport = getVisibleViewport();
+  const viewport = getNoButtonViewport();
   const margin = 12;
-
-  // The button is position:fixed and left/top represent its untransformed
-  // top-left corner. Calculate the rotated bounding-box size so every corner
-  // remains inside the visible viewport.
   const width = noButton.offsetWidth;
   const height = noButton.offsetHeight;
-  const radians = Math.abs(rotationDegrees) * Math.PI / 180;
-  const rotatedWidth = Math.abs(width * Math.cos(radians)) + Math.abs(height * Math.sin(radians));
-  const rotatedHeight = Math.abs(width * Math.sin(radians)) + Math.abs(height * Math.cos(radians));
 
-  const minLeft = viewport.left + margin + (rotatedWidth - width) / 2;
-  const maxLeft = viewport.right - margin - (rotatedWidth + width) / 2;
-  const minTop = viewport.top + margin + (rotatedHeight - height) / 2;
-  const maxTop = viewport.bottom - margin - (rotatedHeight + height) / 2;
+  // Try a fresh random rotation. If the viewport is too small, reduce the
+  // angle until the complete rotated rectangle can fit.
+  const candidates = [
+    Math.round((Math.random() * 50 - 25) * 10) / 10,
+    15, -15, 10, -10, 5, -5, 0,
+  ];
 
-  if (maxLeft < minLeft || maxTop < minTop) {
-    return false;
+  let rotation = 0;
+  let bounds = getRotatedBounds(width, height, 0);
+  let minLeft = 0, maxLeft = 0, minTop = 0, maxTop = 0;
+
+  for (const candidate of candidates) {
+    const b = getRotatedBounds(width, height, candidate);
+    const minL = viewport.left + margin + (b.width - width) / 2;
+    const maxL = viewport.right - margin - (b.width + width) / 2;
+    const minT = viewport.top + margin + (b.height - height) / 2;
+    const maxT = viewport.bottom - margin - (b.height + height) / 2;
+
+    if (maxL >= minL && maxT >= minT) {
+      rotation = candidate;
+      bounds = b;
+      minLeft = minL;
+      maxLeft = maxL;
+      minTop = minT;
+      maxTop = maxT;
+      break;
+    }
   }
 
-  const left = minLeft + Math.random() * (maxLeft - minLeft);
-  const top = minTop + Math.random() * (maxTop - minTop);
+  const left = minLeft + Math.random() * Math.max(0, maxLeft - minLeft);
+  const top = minTop + Math.random() * Math.max(0, maxTop - minTop);
+  return { left, top, rotation, bounds };
+}
 
-  noButton.style.left = `${left}px`;
-  noButton.style.top = `${top}px`;
-  noButton.style.transform = `rotate(${rotationDegrees}deg)`;
-  return true;
+function clampNoButtonToViewport() {
+  if (!noButton || !noButton.classList.contains("floating")) return;
+
+  const viewport = getNoButtonViewport();
+  const margin = 12;
+  const rect = noButton.getBoundingClientRect();
+  let dx = 0;
+  let dy = 0;
+
+  if (rect.left < viewport.left + margin) dx = viewport.left + margin - rect.left;
+  if (rect.right > viewport.right - margin) dx = Math.min(dx || 0, viewport.right - margin - rect.right);
+  if (rect.top < viewport.top + margin) dy = viewport.top + margin - rect.top;
+  if (rect.bottom > viewport.bottom - margin) dy = Math.min(dy || 0, viewport.bottom - margin - rect.bottom);
+
+  if (dx || dy) {
+    const left = parseFloat(noButton.style.left) || 0;
+    const top = parseFloat(noButton.style.top) || 0;
+    noButton.style.left = `${left + dx}px`;
+    noButton.style.top = `${top + dy}px`;
+  }
+
+  // Final correction after the browser has applied the transform.
+  const corrected = noButton.getBoundingClientRect();
+  let cdx = 0;
+  let cdy = 0;
+  if (corrected.left < margin) cdx = margin - corrected.left;
+  else if (corrected.right > viewport.right - margin) cdx = viewport.right - margin - corrected.right;
+  if (corrected.top < margin) cdy = margin - corrected.top;
+  else if (corrected.bottom > viewport.bottom - margin) cdy = viewport.bottom - margin - corrected.bottom;
+
+  if (cdx || cdy) {
+    noButton.style.left = `${(parseFloat(noButton.style.left) || 0) + cdx}px`;
+    noButton.style.top = `${(parseFloat(noButton.style.top) || 0) + cdy}px`;
+  }
 }
 
 function moveNoButtonRandomly() {
   if (!noButton) return;
 
+  if (noButton.parentElement !== document.body) document.body.appendChild(noButton);
   noButton.classList.add("floating");
-
-  // Temporarily remove the CSS transition while choosing the new position.
-  // This prevents an animated path between two safe positions from briefly
-  // crossing outside the viewport.
+  noButton.style.position = "fixed";
   noButton.style.transition = "none";
 
-  let rotation = Math.round((Math.random() * 50 - 25) * 10) / 10;
-  if (!placeNoButtonSafely(rotation)) {
-    rotation = 0;
-    placeNoButtonSafely(0);
-  }
+  const placement = getSafeNoPlacement();
+  if (!placement) return;
 
-  // Force layout so the browser has applied the exact position/rotation.
-  // Then use the actual rendered rectangle for a final safety correction.
+  noButton.style.left = `${placement.left}px`;
+  noButton.style.top = `${placement.top}px`;
+  noButton.style.transform = `rotate(${placement.rotation}deg)`;
+
+  // Force layout, then use the actual transformed rectangle as the source of truth.
   void noButton.offsetWidth;
-  keepNoButtonInsideViewport();
+  clampNoButtonToViewport();
 }
 
 function showSadCat() {
-  sadCatBox.classList.remove("hidden");
+  if (sadCatBox) sadCatBox.classList.remove("hidden");
 }
 
 function changeSadCatImage() {
-  if (sadCatImages.length === 0) {
-    return;
-  }
-
-  sadCatIndex++;
-
-  if (sadCatIndex >= sadCatImages.length) {
-    sadCatIndex = 0;
-  }
-
+  if (!sadCatImage || sadCatImages.length === 0) return;
+  sadCatIndex = (sadCatIndex + 1) % sadCatImages.length;
   sadCatImage.style.opacity = "0";
-
   setTimeout(function () {
     sadCatImage.src = sadCatImages[sadCatIndex];
-
     sadCatImage.style.opacity = "1";
   }, 120);
 }
 
 function growYesButton() {
   noClickCount++;
-
   yesScale = 1 + noClickCount * 0.12;
-
-  yesButton.style.transform = `scale(${yesScale})`;
-}
-
-function getViewportBounds(rotationDegrees = 0) {
-  // The NO button uses position: fixed, so its coordinates are relative to
-  // the layout viewport. Use the layout viewport dimensions for placement
-  // rather than visualViewport.width/height, which can be smaller or offset
-  // on mobile browsers and during zoom/toolbar changes.
-  const width = Math.max(0, document.documentElement.clientWidth || window.innerWidth);
-  const height = Math.max(0, document.documentElement.clientHeight || window.innerHeight);
-  const edgeMargin = Math.max(12, Math.min(24, Math.min(width, height) * 0.035));
-
-  const buttonWidth = noButton.offsetWidth;
-  const buttonHeight = noButton.offsetHeight;
-
-  // A rotated rectangle extends outside its normal box. Reserve the exact
-  // amount needed around its center so the visible button remains inside the
-  // viewport.
-  const radians = Math.abs(rotationDegrees) * Math.PI / 180;
-  const cos = Math.cos(radians);
-  const sin = Math.sin(radians);
-  const rotatedWidth = buttonWidth * cos + buttonHeight * sin;
-  const rotatedHeight = buttonWidth * sin + buttonHeight * cos;
-  const extraX = Math.max(0, (rotatedWidth - buttonWidth) / 2);
-  const extraY = Math.max(0, (rotatedHeight - buttonHeight) / 2);
-
-  const minX = edgeMargin + extraX;
-  const minY = edgeMargin + extraY;
-  const maxX = Math.max(minX, width - edgeMargin - buttonWidth - extraX);
-  const maxY = Math.max(minY, height - edgeMargin - buttonHeight - extraY);
-
-  return {
-    minX,
-    minY,
-    maxX,
-    maxY,
-    canRotate: maxX >= minX && maxY >= minY
-  };
-}
-
-function getSafeRandomPosition(rotationDegrees) {
-  let bounds = getViewportBounds(rotationDegrees);
-
-  // If the button cannot fit at the requested rotation, remove rotation.
-  if (!bounds.canRotate) {
-    rotationDegrees = 0;
-    bounds = getViewportBounds(0);
-  }
-
-  const randomX = bounds.minX + Math.random() * Math.max(0, bounds.maxX - bounds.minX);
-  const randomY = bounds.minY + Math.random() * Math.max(0, bounds.maxY - bounds.minY);
-
-  return { x: randomX, y: randomY, rotation: rotationDegrees };
+  if (yesButton) yesButton.style.transform = `scale(${yesScale})`;
 }
 
 if (noButton) {
   noButton.addEventListener("click", function () {
     showSadCat();
-
     changeSadCatImage();
-
     growYesButton();
-
     moveNoButtonRandomly();
   });
 }
@@ -243,38 +199,16 @@ if (yesButton) {
 
 function keepNoButtonInsideViewport() {
   if (!noButton || !noButton.classList.contains("floating")) return;
-
-  const viewport = getVisibleViewport();
-  const margin = 12;
-  const rect = noButton.getBoundingClientRect();
-
-  let dx = 0;
-  let dy = 0;
-
-  if (rect.left < viewport.left + margin) {
-    dx = viewport.left + margin - rect.left;
-  } else if (rect.right > viewport.right - margin) {
-    dx = viewport.right - margin - rect.right;
-  }
-
-  if (rect.top < viewport.top + margin) {
-    dy = viewport.top + margin - rect.top;
-  } else if (rect.bottom > viewport.bottom - margin) {
-    dy = viewport.bottom - margin - rect.bottom;
-  }
-
-  if (dx !== 0 || dy !== 0) {
-    const left = parseFloat(noButton.style.left) || 0;
-    const top = parseFloat(noButton.style.top) || 0;
-    noButton.style.left = `${left + dx}px`;
-    noButton.style.top = `${top + dy}px`;
-  }
+  clampNoButtonToViewport();
 }
 
-window.addEventListener("resize", keepNoButtonInsideViewport);
-window.addEventListener("orientationchange", keepNoButtonInsideViewport);
+window.addEventListener("resize", keepNoButtonInsideViewport, { passive: true });
+window.addEventListener("orientationchange", function () {
+  requestAnimationFrame(keepNoButtonInsideViewport);
+}, { passive: true });
 
 if (window.visualViewport) {
-  window.visualViewport.addEventListener("resize", keepNoButtonInsideViewport);
-  window.visualViewport.addEventListener("scroll", keepNoButtonInsideViewport);
+  window.visualViewport.addEventListener("resize", function () {
+    requestAnimationFrame(keepNoButtonInsideViewport);
+  }, { passive: true });
 }
