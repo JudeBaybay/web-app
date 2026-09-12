@@ -45,10 +45,15 @@ body {
   align-items: center;
   background-color: var(--background);
   background-image: url("https://png.pngtree.com/thumb_back/fh260/background/20231017/pngtree-light-pink-old-rose-recycled-craft-paper-textured-background-image_13625147.png");
-  background-size: cover;
-  background-position: center;
+  /* Keep the full paper texture visible at every aspect ratio.
+     The source image is landscape, so `cover` would heavily crop/zoom it on
+     tall phones and tablets. Stretching the subtle paper texture to the
+     viewport avoids that inconsistency while preserving the same background
+     treatment across devices. */
+  background-size: 100% 100%;
+  background-position: center center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-attachment: scroll;
   overflow: hidden;
 }
 
@@ -161,6 +166,31 @@ body {
 }
 
 .sad-cat-container img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.happy-cat-box {
+  width: 275px;
+  height: 275px;
+  margin: 0 auto 13px;
+  border: 2.5px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;
+  background: #ebe7dc;
+  box-shadow: 2px 2px 0 var(--border);
+}
+
+.happy-cat-container {
+  width: 275px;
+  height: 275px;
+  overflow: hidden;
+  background: #ebe7dc;
+}
+
+.happy-cat-container img {
   width: 100%;
   height: 100%;
   display: block;
@@ -1058,6 +1088,18 @@ body {
     transform: translate3d(var(--drift), calc(100vh + 160px), 0)
       rotate(var(--rotation));
     opacity: 0;
+  }
+}
+
+@media (max-width: 699px) {
+  /* Mobile browsers handle fixed backgrounds inconsistently. Keep the same
+     full-viewport texture, but let it scroll normally with the page. */
+  .landing-page,
+  .date-page,
+  .ticket-page {
+    background-size: 100% 100%;
+    background-position: center center;
+    background-attachment: scroll;
   }
 }
 
@@ -2176,3 +2218,568 @@ body {
     font-size: 25px;
   }
 }
+
+
+
+/* Keep the evasive NO button fully reachable on every viewport. */
+.no-button.floating {
+  position: fixed;
+  box-sizing: border-box;
+  touch-action: manipulation;
+}
+
+/* Keep the NO button at the same visual size as the desktop design.
+   It may move around the viewport, but it should never shrink just because
+   the viewport is below 700px wide. */
+.no-button {
+  width: 95px;
+  height: 65px;
+  min-width: 95px;
+  min-height: 65px;
+  max-width: 95px;
+  max-height: 65px;
+  flex: 0 0 95px;
+  font-size: 35px;
+}
+
+.no-button.floating {
+  width: 95px;
+  height: 65px;
+  min-width: 95px;
+  min-height: 65px;
+  max-width: 95px;
+  max-height: 65px;
+}
+
+/* =========================================================
+   Envelope intro
+   ========================================================= */
+.envelope-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  cursor: pointer;
+  background-color: var(--background);
+  background-image: url("https://png.pngtree.com/thumb_back/fh260/background/20231017/pngtree-light-pink-old-rose-recycled-craft-paper-textured-background-image_13625147.png");
+  background-size: 100% 100%;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  transition: opacity 0.45s ease, visibility 0.45s ease;
+}
+
+.envelope-intro.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.envelope-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  animation: envelopeFloat 2.4s ease-in-out infinite;
+}
+
+.envelope {
+  position: relative;
+  width: 300px;
+  height: 205px;
+  perspective: 900px;
+  filter: drop-shadow(0 14px 20px rgba(93, 55, 42, 0.18));
+}
+
+.envelope-back,
+.envelope-front,
+.envelope-flap,
+.envelope-letter {
+  position: absolute;
+  left: 0;
+  width: 100%;
+}
+
+.envelope-back {
+  top: 0;
+  height: 100%;
+  border: 2px solid #c98d8d;
+  border-radius: 8px;
+  background: #f5c8c8;
+}
+
+.envelope-letter {
+  z-index: 2;
+  left: 8%;
+  top: 12%;
+  width: 84%;
+  height: 78%;
+  border-radius: 5px;
+  background: #fffaf5;
+  box-shadow: 0 4px 10px rgba(93, 55, 42, 0.08);
+  transform: translateY(18%);
+  transition: transform 0.75s cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+
+.envelope-letter::before,
+.envelope-letter::after {
+  content: "";
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  height: 2px;
+  border-radius: 2px;
+  background: #e8c5bd;
+}
+
+.envelope-letter::before { top: 34%; }
+.envelope-letter::after { top: 48%; }
+
+.envelope-front {
+  z-index: 3;
+  bottom: 0;
+  height: 62%;
+  clip-path: polygon(0 0, 50% 58%, 100% 0, 100% 100%, 0 100%);
+  border-radius: 0 0 8px 8px;
+  background: #efb8bc;
+}
+
+.envelope-flap {
+  z-index: 4;
+  top: 0;
+  height: 58%;
+  transform-origin: top center;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  border-radius: 8px 8px 0 0;
+  background: #f3c1c4;
+  backface-visibility: hidden;
+  transition: transform 0.75s cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+
+.envelope-heart {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  color: #fffaf5;
+  background: #d98994;
+  font-size: 21px;
+  box-shadow: 0 4px 10px rgba(93, 55, 42, 0.16);
+  transition: opacity 0.25s ease, transform 0.45s ease;
+}
+
+.envelope-hint {
+  margin: 0;
+  color: #7c5146;
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  text-align: center;
+}
+
+.envelope-intro.opened .envelope-wrap {
+  animation: none;
+}
+
+.envelope-intro.opened .envelope-flap {
+  transform: rotateX(180deg);
+}
+
+.envelope-intro.opened .envelope-letter {
+  transform: translateY(-38%);
+}
+
+.envelope-intro.opened .envelope-heart {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.65);
+}
+
+.question-card-hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+}
+
+.question-card-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+@keyframes envelopeFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@media (max-width: 430px) {
+  .envelope-intro {
+    padding: 18px;
+  }
+
+  .envelope {
+    width: min(300px, 78vw);
+    height: calc(min(300px, 78vw) * 0.683333);
+  }
+
+  .envelope-hint {
+    font-size: 13px;
+  }
+}
+
+@media (max-height: 650px) {
+  .envelope-intro {
+    align-items: center;
+  }
+
+  .envelope {
+    width: min(260px, 72vw);
+    height: calc(min(260px, 72vw) * 0.683333);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .envelope-wrap,
+  .envelope-flap,
+  .envelope-letter,
+  .envelope-heart,
+  .question-card-visible,
+  .envelope-intro {
+    animation: none;
+    transition-duration: 0.01ms;
+  }
+}
+
+
+/* =========================================================
+   Final all-device responsive pass
+   ========================================================= */
+
+/* Let pages grow vertically when a device is shorter than the design.
+   This prevents clipping while preserving the desktop proportions. */
+.landing-page,
+.date-page,
+.ticket-page {
+  min-height: 100dvh;
+  height: auto;
+  overflow-x: hidden;
+}
+
+@media (max-width: 699px) {
+  .landing-page,
+  .date-page,
+  .ticket-page {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* -------- Landing -------- */
+  .landing-page {
+    padding: max(8px, env(safe-area-inset-top))
+             max(8px, env(safe-area-inset-right))
+             max(8px, env(safe-area-inset-bottom))
+             max(8px, env(safe-area-inset-left));
+  }
+
+  .landing-page .phone-screen {
+    width: min(100%, 375px);
+    min-height: calc(100dvh - 16px);
+  }
+
+  .landing-card {
+    width: min(92vw, 375px);
+    max-width: 375px;
+    min-height: 390px;
+  }
+
+  /* Keep the question readable; only reduce it when the actual viewport is
+     too narrow to accommodate the original typography. */
+  @media (max-width: 360px) {
+    .landing-card {
+      min-height: 360px;
+      padding: 20px 16px;
+    }
+
+    .question-title {
+      font-size: clamp(29px, 9.8vw, 40px);
+    }
+
+    .answer-container {
+      margin-top: 42px;
+    }
+  }
+
+  /* -------- Date page -------- */
+  .date-page {
+    padding: max(8px, env(safe-area-inset-top))
+             max(8px, env(safe-area-inset-right))
+             max(8px, env(safe-area-inset-bottom))
+             max(8px, env(safe-area-inset-left));
+  }
+
+  .date-page .phone-screen {
+    min-height: calc(100dvh - 16px);
+  }
+
+  .date-page .invitation-container {
+    width: min(100%, 420px);
+    transform-origin: center center;
+  }
+
+  /* The date screen is scaled as one complete unit only when the viewport is
+     too short. Width remains fluid, so normal phones keep their intended size. */
+  .date-page .invitation-container {
+    --date-scale: min(1, calc((100dvh - 30px) / 680));
+  }
+
+  @media (max-height: 700px) {
+    .date-page .invitation-container {
+      transform: scale(var(--date-scale));
+      margin-top: calc((1 - var(--date-scale)) * -20px);
+      margin-bottom: calc((1 - var(--date-scale)) * -20px);
+    }
+  }
+
+  .date-card {
+    width: min(92vw, 420px);
+    max-width: 420px;
+  }
+
+  /* Prevent the calendar/time dialogs from exceeding the viewport. */
+  .picker-overlay {
+    padding: max(10px, env(safe-area-inset-top))
+             max(10px, env(safe-area-inset-right))
+             max(10px, env(safe-area-inset-bottom))
+             max(10px, env(safe-area-inset-left));
+    overflow-y: auto;
+    align-items: center;
+  }
+
+  .picker-modal,
+  .time-picker-modal {
+    max-height: calc(100dvh - 20px);
+    overflow-y: auto;
+  }
+
+  /* -------- Ticket page -------- */
+  .ticket-page {
+    padding: max(4px, env(safe-area-inset-top))
+             max(4px, env(safe-area-inset-right))
+             max(4px, env(safe-area-inset-bottom))
+             max(4px, env(safe-area-inset-left));
+  }
+
+  .ticket-page .phone-screen {
+    min-height: calc(100dvh - 8px);
+    height: auto;
+    justify-content: center;
+  }
+
+  /* Keep the ticket's original 340x560 design as the source of truth.
+     On short screens, scale the COMPLETE ticket + button uniformly instead
+     of independently shrinking text, cat, spacing, and controls. */
+  .ticket-wrapper {
+    --ticket-scale: min(
+      1,
+      calc((100vw - 8px) / 340),
+      calc((100dvh - 16px) / 656)
+    );
+    width: 340px;
+    max-width: none;
+    height: calc(656px * var(--ticket-scale));
+    flex: 0 0 auto;
+    transform: scale(var(--ticket-scale));
+    transform-origin: center center;
+  }
+
+  .ticket-card {
+    width: 340px;
+    height: 560px;
+    min-width: 340px;
+    min-height: 560px;
+    max-width: 340px;
+    max-height: 560px;
+    aspect-ratio: auto;
+    padding: 20px 16px 16px;
+  }
+
+  .ticket-title {
+    font-size: 50px;
+    margin-bottom: 15px;
+  }
+
+  .ticket-information {
+    height: 65px;
+    padding: 6px 0;
+  }
+
+  .ticket-information p {
+    font-size: 30px;
+  }
+
+  .ticket-spacing {
+    margin-top: 60px;
+    margin-bottom: 60px;
+  }
+
+  .see-you {
+    left: 30px;
+    bottom: 50px;
+    font-size: 50px;
+  }
+
+  .happy-cat {
+    right: 17px;
+    bottom: 32px;
+    width: 145px;
+    height: 145px;
+  }
+
+  .download-button {
+    width: 220px;
+    height: 80px;
+    margin-top: 16px;
+    font-size: 25px;
+  }
+}
+
+/* Extremely narrow phones: the ticket still scales as one unit, with no
+   separate font/image/button scaling that could distort the design. */
+@media (max-width: 340px) {
+  .ticket-wrapper {
+    --ticket-scale: min(
+      1,
+      calc((100vw - 8px) / 340),
+      calc((100dvh - 16px) / 656)
+    );
+  }
+
+  .landing-page .phone-screen,
+  .date-page .phone-screen,
+  .ticket-page .phone-screen {
+    min-width: 0;
+  }
+
+  .date-page .date-card {
+    width: 100%;
+  }
+}
+
+/* Very short screens: keep the page usable and avoid flex-centering a unit
+   whose scaled height would otherwise start outside the viewport. */
+@media (max-width: 699px) and (max-height: 620px) {
+  .landing-page .phone-screen,
+  .date-page .phone-screen,
+  .ticket-page .phone-screen {
+    justify-content: flex-start;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .envelope-intro {
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Landscape phones/tablets: don't let a very wide, short viewport make the
+   main cards unnecessarily tall or push controls outside the screen. */
+@media (orientation: landscape) and (max-height: 600px) and (max-width: 900px) {
+  .landing-page .phone-screen,
+  .date-page .phone-screen,
+  .ticket-page .phone-screen {
+    min-height: 0;
+  }
+
+  .landing-page .phone-screen {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .date-page .phone-screen,
+  .ticket-page .phone-screen {
+    justify-content: flex-start;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+
+/* Devices with a safe-area notch/home indicator. */
+@supports (padding: max(0px)) {
+  .landing-page,
+  .date-page,
+  .ticket-page {
+    padding-left: max(4px, env(safe-area-inset-left));
+    padding-right: max(4px, env(safe-area-inset-right));
+  }
+}
+
+
+/* NO button: instant safe repositioning. The position is recalculated on each
+   press, so a transition cannot create an out-of-bounds path between points. */
+.no-button.floating {
+  transition: none !important;
+  transform-origin: center center;
+}
+
+/* =========================================================
+   Yey page - responsive happy cat image
+   Keep the image visually consistent at 275px on normal devices.
+   Only scale it down when the actual viewport is too small to fit it.
+   ========================================================= */
+.yey-page .invitation-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: none !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.yey-page .happy-cat-box {
+  width: min(275px, calc(100vw - 32px), calc(100dvh - 150px));
+  height: min(275px, calc(100vw - 32px), calc(100dvh - 150px));
+  flex: 0 0 auto;
+  margin: 0 auto 13px;
+}
+
+.yey-page .happy-cat-container {
+  width: 100%;
+  height: 100%;
+}
+
+.yey-page .happy-cat-container img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+/* Keep the 275px design on normal phones/tablets/desktops.
+   This breakpoint only handles genuinely tiny viewports. */
+@media (max-width: 300px), (max-height: 430px) {
+  .yey-page .happy-cat-box {
+    width: min(275px, calc(100vw - 24px), calc(100dvh - 120px));
+    height: min(275px, calc(100vw - 24px), calc(100dvh - 120px));
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .yey-page .happy-cat-box {
+    width: min(275px, calc(100vw - 24px), calc(100dvh - 105px));
+    height: min(275px, calc(100vw - 24px), calc(100dvh - 105px));
+  }
+}
+
