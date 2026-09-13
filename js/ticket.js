@@ -108,7 +108,7 @@ downloadButton.addEventListener("click", async function () {
 // GitHub Pages cannot run /api/send-ticket itself. Set this to the
 // public URL of the Vercel serverless function that you deploy from
 // the /api folder in this project.
-const SEND_TICKET_API_URL = "https://YOUR-VERCEL-PROJECT.vercel.app/api/send-ticket";
+const SEND_TICKET_API_URL = "https://web-89x8uipc6-jowds-projects.vercel.app/api/send-ticket";
 
 const sendTicketButton = document.getElementById("sendTicketButton");
 const sendTicketStatus = document.getElementById("sendTicketStatus");
