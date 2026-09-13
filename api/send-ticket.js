@@ -44,7 +44,7 @@ export default async function handler(req, res) {
         to: [process.env.TICKET_TO_EMAIL],
         subject: "New Date Ticket",
         html: `
-          <p>A new date ticket was sent from the website.</p>
+          <h1><strong>A new date ticket was sent from the website.</strong></h1>
           <p>
             <strong>Date:</strong>
             ${escapeHtml(date || "")}
