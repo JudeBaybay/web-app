@@ -2,46 +2,48 @@
 // Set these environment variables in your Vercel project:
 // RESEND_API_KEY, TICKET_TO_EMAIL, TICKET_FROM_EMAIL
 
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    },
-  });
-}
+export default async function handler(request, response) {
+  response.setHeader("Access-Control-Allow-Origin", "*");
+  response.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  response.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-export default async function handler(request) {
-  if (request.method === "OPTIONS") return json({ success: true });
-  if (request.method !== "POST") return json({ success: false, error: "Method not allowed." }, 405);
+  if (request.method === "OPTIONS") {
+    response.status(200).json({ success: true });
+    return;
+  }
+
+  if (request.method !== "POST") {
+    response.status(405).json({ success: false, error: "Method not allowed." });
+    return;
+  }
 
   const apiKey = process.env.RESEND_API_KEY;
   const toEmail = process.env.TICKET_TO_EMAIL;
   const fromEmail = process.env.TICKET_FROM_EMAIL;
 
   if (!apiKey || !toEmail || !fromEmail) {
-    return json({
+    response.status(500).json({
       success: false,
       error: "The email service is not configured yet. Add the required server environment variables.",
-    }, 500);
+    });
+    return;
   }
 
   try {
-    const body = await request.json();
+    const body = request.body || {};
     const dataUrl = String(body.ticket_image || "");
     const date = String(body.date || "");
     const time = String(body.time || "");
 
     if (!dataUrl.startsWith("data:image/png;base64,")) {
-      return json({ success: false, error: "Invalid ticket image." }, 400);
+      response.status(400).json({ success: false, error: "Invalid ticket image." });
+      return;
     }
 
     const base64 = dataUrl.substring("data:image/png;base64,".length);
     if (!base64 || base64.length > 15_000_000) {
-      return json({ success: false, error: "Ticket image is too large." }, 400);
+      response.status(400).json({ success: false, error: "Ticket image is too large." });
+      return;
     }
 
     const resendResponse = await fetch("https://api.resend.com/emails", {
@@ -75,13 +77,16 @@ export default async function handler(request) {
     if (!resendResponse.ok) {
       const errorText = await resendResponse.text();
       console.error("Resend API error:", errorText);
-      return json({ success: false, error: "The email service could not send the ticket." }, 502);
+      response.status(502).json({ success: false, error: "The email service could not send the ticket." });
+      return;
     }
 
-    return json({ success: true });
+    response.status(200).json({ success: true });
+    return;
   } catch (error) {
     console.error("Ticket email error:", error);
-    return json({ success: false, error: "Unable to send the ticket right now." }, 500);
+    response.status(500).json({ success: false, error: "Unable to send the ticket right now." });
+    return;
   }
 }
 
