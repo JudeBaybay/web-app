@@ -1,103 +1,56 @@
-// Vercel serverless endpoint for sending the generated ticket as a PNG attachment.
-// Set these environment variables in your Vercel project:
-// RESEND_API_KEY, TICKET_TO_EMAIL, TICKET_FROM_EMAIL
-
-export default async function handler(request, response) {
-  response.setHeader("Access-Control-Allow-Origin", "*");
-  response.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  response.setHeader("Access-Control-Allow-Headers", "Content-Type");
-
-  if (request.method === "OPTIONS") {
-    response.status(200).json({ success: true });
-    return;
-  }
-
-  if (request.method !== "POST") {
-    response.status(405).json({ success: false, error: "Method not allowed." });
-    return;
-  }
-
-  const apiKey = process.env.RESEND_API_KEY;
-  const toEmail = process.env.TICKET_TO_EMAIL;
-  const fromEmail = process.env.TICKET_FROM_EMAIL;
-
-  if (!apiKey || !toEmail || !fromEmail) {
-    response.status(500).json({
-      success: false,
-      error: "The email service is not configured yet. Add the required server environment variables.",
-    });
-    return;
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed." });
   }
 
   try {
-    const body = request.body || {};
-    const dataUrl = String(body.ticket_image || "");
-    const date = String(body.date || "");
-    const time = String(body.time || "");
+    const { image, filename, date, time } = req.body || {};
 
-    if (!dataUrl.startsWith("data:image/png;base64,")) {
-      response.status(400).json({ success: false, error: "Invalid ticket image." });
-      return;
+    if (!image) {
+      return res.status(400).json({ error: "Ticket image is required." });
     }
 
-    const base64 = dataUrl.substring("data:image/png;base64,".length);
-    if (!base64 || base64.length > 15_000_000) {
-      response.status(400).json({ success: false, error: "Ticket image is too large." });
-      return;
+    if (!process.env.RESEND_API_KEY || !process.env.TICKET_TO_EMAIL || !process.env.TICKET_FROM_EMAIL) {
+      return res.status(500).json({ error: "Email service is not configured." });
     }
 
-    const resendResponse = await fetch("https://api.resend.com/emails", {
+    const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: fromEmail,
-        to: [toEmail],
-        subject: "A date ticket has been sent to you",
-        html: `
-          <div style="font-family:Arial,sans-serif;line-height:1.6">
-            <h2>Someone sent you a date ticket!</h2>
-            <p><strong>Date:</strong> ${escapeHtml(date)}</p>
-            <p><strong>Time:</strong> ${escapeHtml(time)}</p>
-            <p>The generated ticket is attached to this email.</p>
-          </div>
-        `,
-        attachments: [
-          {
-            filename: "your-date-ticket.png",
-            content: base64,
-            content_type: "image/png",
-          },
-        ],
+        from: process.env.TICKET_FROM_EMAIL,
+        to: [process.env.TICKET_TO_EMAIL],
+        subject: "New Date Ticket",
+        html: `<p>A new date ticket was sent from the website.</p><p><strong>Date:</strong> ${escapeHtml(date || "")}</p><p><strong>Time:</strong> ${escapeHtml(time || "")}</p>`,
+        attachments: [{
+          filename: filename || "your-date-ticket.png",
+          content: image,
+        }],
       }),
     });
 
-    if (!resendResponse.ok) {
-      const errorText = await resendResponse.text();
-      console.error("Resend API error:", errorText);
-      response.status(502).json({ success: false, error: "The email service could not send the ticket." });
-      return;
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error("Resend error:", result);
+      return res.status(response.status).json({ error: result.message || "Resend could not send the email." });
     }
 
-    response.status(200).json({ success: true });
-    return;
+    return res.status(200).json({ ok: true, id: result.id });
   } catch (error) {
     console.error("Ticket email error:", error);
-    response.status(500).json({ success: false, error: "Unable to send the ticket right now." });
-    return;
+    return res.status(500).json({ error: "Unable to send ticket." });
   }
 }
 
 function escapeHtml(value) {
-  return value.replace(/[&<>'"]/g, function (character) {
-    return {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      "'": "&#39;",
-      '"': "&quot;",
-    }[character];
-  });
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }

@@ -3334,3 +3334,72 @@ body {
     margin-bottom: 10px;
   }
 }
+
+
+/* =========================================================
+   Send ticket button
+   ========================================================= */
+.send-ticket-button {
+  display: block;
+  width: min(220px, calc(100vw - 24px));
+  min-height: 52px;
+  margin: 12px auto 0;
+  padding: 8px 14px;
+  border: 2.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--pink-light);
+  color: var(--dark);
+  box-shadow: 3px 3px 0 var(--border);
+  font-family: "Patrick Hand", cursive;
+  font-size: clamp(17px, 5vw, 21px);
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  text-align: center;
+  white-space: normal;
+  touch-action: manipulation;
+}
+
+.send-ticket-button:hover {
+  background: var(--pink);
+}
+
+.send-ticket-button:active {
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.send-ticket-button:focus-visible {
+  outline: 2px solid var(--border);
+  outline-offset: 3px;
+}
+
+.send-ticket-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.send-ticket-status {
+  width: min(280px, calc(100vw - 24px));
+  min-height: 1.25em;
+  margin: 8px auto 0;
+  color: var(--dark);
+  font-family: "Patrick Hand", cursive;
+  font-size: clamp(14px, 4vw, 18px);
+  line-height: 1.15;
+  text-align: center;
+}
+
+@media (max-width: 350px) {
+  .send-ticket-button {
+    width: min(210px, calc(100vw - 16px));
+    min-height: 46px;
+    margin-top: 9px;
+    font-size: 17px;
+  }
+
+  .send-ticket-status {
+    width: calc(100vw - 16px);
+    font-size: 15px;
+  }
+}
