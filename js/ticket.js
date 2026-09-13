@@ -3,8 +3,15 @@ const ticketDate = document.getElementById("ticketDate");
 const ticketTime = document.getElementById("ticketTime");
 
 const downloadButton = document.getElementById("downloadButton");
+const backToDateButton = document.getElementById("backToDateButton");
 
 const ticket = document.getElementById("ticket");
+
+if (backToDateButton) {
+  backToDateButton.addEventListener("click", function () {
+    window.location.href = "date.html";
+  });
+}
 
 const selectedDate = localStorage.getItem("selectedDate");
 

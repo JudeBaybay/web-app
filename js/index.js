@@ -1,3 +1,9 @@
+// Start each new visit from the landing page with a fresh date/time.
+// Values are intentionally kept while navigating between date.html and
+// ticket.html, but are cleared whenever the site is entered through index.html.
+localStorage.removeItem("selectedDate");
+localStorage.removeItem("selectedTime");
+
 const envelopeIntro = document.getElementById("envelopeIntro");
 const landingCard = document.querySelector(".landing-card");
 
