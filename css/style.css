@@ -3403,3 +3403,543 @@ body {
     font-size: 15px;
   }
 }
+
+
+/* =========================================================
+   V18 — FINAL VIEWPORT-FIT / NO-SCROLL RESPONSIVE SYSTEM
+   The design uses fixed "source" dimensions and scales complete page units
+   proportionally when the viewport is too small. This prevents individual
+   text/images/buttons from shrinking at different rates.
+   ========================================================= */
+
+/* Never allow the document itself to scroll. All primary page content is
+   fitted to the current viewport instead. */
+html,
+body {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+
+.landing-page,
+.date-page,
+.ticket-page {
+  width: 100%;
+  height: 100dvh;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden !important;
+  position: relative;
+}
+
+/* Keep the decorative layer inside the viewport. */
+.emoji-waterfall {
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* ---------- LANDING / INDEX ---------- */
+.landing-page {
+  padding: 0 !important;
+}
+
+.landing-page > .phone-screen {
+  width: 375px;
+  height: 603px;
+  min-width: 0;
+  min-height: 0;
+  flex: 0 0 375px;
+  position: relative;
+  z-index: 2;
+  transform-origin: center center;
+  --landing-scale: min(
+    1,
+    calc((100vw - 16px) / 375px),
+    calc((100dvh - 16px) / 603px)
+  );
+  transform: scale(var(--landing-scale));
+}
+
+/* The question/sad-cat composition is always kept at its desktop source size.
+   The whole composition scales as one unit on small viewports. */
+.landing-page .invitation-container {
+  width: 375px;
+  max-width: 375px;
+  min-width: 375px;
+  min-height: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The hidden envelope remains a viewport overlay and is separately fitted. */
+.envelope-intro {
+  box-sizing: border-box;
+  width: 100vw;
+  height: 100dvh;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 16px;
+}
+
+.envelope-wrap {
+  width: 300px;
+  max-width: 100%;
+  flex: 0 0 auto;
+}
+
+.envelope {
+  width: 300px;
+  height: 205px;
+  max-width: 100%;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 699px) {
+  .envelope {
+    width: min(300px, calc(100vw - 32px));
+    height: calc(min(300px, calc(100vw - 32px)) * 0.683333);
+  }
+}
+
+/* Tiny/short screens: scale the entire envelope instead of independently
+   shrinking its parts. */
+@media (max-width: 430px), (max-height: 650px) {
+  .envelope-wrap {
+    --envelope-scale: min(
+      1,
+      calc((100vw - 32px) / 300px),
+      calc((100dvh - 80px) / 240px)
+    );
+    transform: scale(var(--envelope-scale));
+    transform-origin: center center;
+  }
+}
+
+/* ---------- DATE PAGE ---------- */
+.date-page {
+  padding: 0 !important;
+}
+
+.date-page > .phone-screen {
+  width: 420px;
+  height: 666px;
+  min-width: 0;
+  min-height: 0;
+  flex: 0 0 420px;
+  position: relative;
+  z-index: 2;
+  transform-origin: center center;
+  --date-scale: min(
+    1,
+    calc((100vw - 20px) / 420px),
+    calc((100dvh - 20px) / 666px)
+  );
+  transform: scale(var(--date-scale));
+}
+
+.date-page .invitation-container {
+  width: 420px;
+  max-width: 420px;
+  min-width: 420px;
+  min-height: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.date-page .sad-cat-box,
+.date-page .sad-cat-container {
+  width: 200px;
+  height: 200px;
+  max-width: 200px;
+  max-height: 200px;
+}
+
+.date-card {
+  width: 420px;
+  height: 453px;
+  min-width: 420px;
+  min-height: 453px;
+  max-width: 420px;
+  max-height: 453px;
+  flex: 0 0 453px;
+}
+
+/* ---------- DATE/TIME MODALS ----------
+   The page itself remains non-scrollable. The modal is fitted to the
+   viewport, and only its internal content may scroll if a genuinely tiny
+   viewport makes the schedule/calendar physically impossible to display. */
+.picker-overlay,
+.schedule-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden !important;
+  padding: max(8px, env(safe-area-inset-top))
+           max(8px, env(safe-area-inset-right))
+           max(8px, env(safe-area-inset-bottom))
+           max(8px, env(safe-area-inset-left));
+}
+
+.picker-modal,
+.time-picker-modal,
+.schedule-modal {
+  box-sizing: border-box;
+  max-width: calc(100vw - 16px);
+  max-height: calc(100dvh - 16px);
+  min-height: 0;
+}
+
+.picker-modal,
+.time-picker-modal {
+  width: min(420px, calc(100vw - 16px));
+}
+
+.schedule-modal {
+  width: min(980px, calc(100vw - 16px));
+}
+
+.schedule-image {
+  max-width: 100%;
+  max-height: calc(100dvh - 105px);
+  object-fit: contain;
+}
+
+/* ---------- TICKET PAGE ----------
+   Source composition includes:
+   back button + 560px ticket + download + send + status.
+   Fit the COMPLETE composition uniformly so its proportions remain stable. */
+.ticket-page {
+  padding: 0 !important;
+}
+
+.ticket-page > .phone-screen {
+  width: 340px;
+  height: 812px;
+  min-width: 0;
+  min-height: 0;
+  flex: 0 0 340px;
+  position: relative;
+  z-index: 2;
+  transform-origin: center center;
+  --ticket-scale: min(
+    1,
+    calc((100vw - 16px) / 340px),
+    calc((100dvh - 16px) / 812px)
+  );
+  transform: scale(var(--ticket-scale));
+}
+
+.ticket-wrapper {
+  width: 340px;
+  max-width: 340px;
+  min-width: 340px;
+  height: 812px;
+  min-height: 812px;
+  max-height: 812px;
+  flex: 0 0 812px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: visible;
+}
+
+.back-to-date-button {
+  width: 220px;
+  height: 48px;
+  min-height: 48px;
+  flex: 0 0 48px;
+  margin: 0 auto 14px;
+}
+
+.ticket-card {
+  width: 340px;
+  height: 560px;
+  min-width: 340px;
+  min-height: 560px;
+  max-width: 340px;
+  max-height: 560px;
+  flex: 0 0 560px;
+  aspect-ratio: auto;
+}
+
+.ticket-title {
+  font-size: 50px;
+}
+
+.ticket-information {
+  height: fit-content;
+}
+
+.ticket-information p {
+  font-size: 30px;
+}
+
+.ticket-spacing {
+  margin-top: 60px;
+  margin-bottom: 60px;
+}
+
+.see-you {
+  left: 30px;
+  bottom: 50px;
+  font-size: 50px;
+}
+
+.happy-cat {
+  right: 17px;
+  bottom: 32px;
+  width: 145px;
+  height: 145px;
+}
+
+.download-button {
+  width: 220px;
+  height: 80px;
+  min-height: 80px;
+  flex: 0 0 80px;
+  margin: 16px auto 0;
+  font-size: 25px;
+}
+
+/* The <br> between the ticket and download button is intentionally removed
+   from the visual layout; the spacing is controlled by the button margin. */
+.ticket-wrapper > br {
+  display: none;
+}
+
+.send-ticket-button {
+  width: 220px;
+  min-height: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  margin-top: 12px;
+}
+
+.send-ticket-status {
+  width: 280px;
+  min-height: 21px;
+  height: 21px;
+  flex: 0 0 21px;
+  margin-top: 8px;
+}
+
+/* ---------- YEY PAGE ---------- */
+.yey-page > .phone-screen {
+  width: 420px;
+  height: 350px;
+  min-width: 0;
+  min-height: 0;
+  flex: 0 0 420px;
+  position: relative;
+  z-index: 2;
+  transform-origin: center center;
+  --yey-scale: min(
+    1,
+    calc((100vw - 20px) / 420px),
+    calc((100dvh - 20px) / 350px)
+  );
+  transform: scale(var(--yey-scale));
+}
+
+.yey-page .invitation-container {
+  width: 420px;
+  max-width: 420px;
+  min-width: 420px;
+  min-height: 0;
+  margin: 0 !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.yey-page .happy-cat-box,
+.yey-page .happy-cat-container {
+  width: 275px;
+  height: 275px;
+  max-width: 275px;
+  max-height: 275px;
+  flex: 0 0 275px;
+}
+
+.yey-page .happy-cat-box {
+  margin: 0 auto 13px;
+}
+
+.yey-page .proceed-button {
+  width: 135px;
+  height: 45px;
+  min-height: 45px;
+  flex: 0 0 45px;
+  margin-top: 0;
+}
+
+/* ---------- LANDSCAPE ----------
+   The same complete-unit fitting works in landscape. These rules simply
+   remove unnecessary vertical padding so short landscape displays get the
+   maximum usable viewport. */
+@media (orientation: landscape) {
+  .landing-page > .phone-screen {
+    --landing-scale: min(
+      1,
+      calc((100vw - 16px) / 375px),
+      calc((100dvh - 12px) / 603px)
+    );
+  }
+
+  .date-page > .phone-screen {
+    --date-scale: min(
+      1,
+      calc((100vw - 20px) / 420px),
+      calc((100dvh - 12px) / 666px)
+    );
+  }
+
+  .ticket-page > .phone-screen {
+    --ticket-scale: min(
+      1,
+      calc((100vw - 16px) / 340px),
+      calc((100dvh - 12px) / 812px)
+    );
+  }
+
+  .yey-page > .phone-screen {
+    --yey-scale: min(
+      1,
+      calc((100vw - 20px) / 420px),
+      calc((100dvh - 12px) / 350px)
+    );
+  }
+}
+
+/* ---------- VERY SMALL VIEWPORTS ----------
+   At extreme sizes, preserve the layout as a single proportional unit.
+   Do not introduce a second set of independently scaled fonts/images. */
+@media (max-width: 350px) {
+  .landing-page > .phone-screen {
+    --landing-scale: min(
+      1,
+      calc((100vw - 12px) / 375px),
+      calc((100dvh - 12px) / 603px)
+    );
+  }
+
+  .date-page > .phone-screen {
+    --date-scale: min(
+      1,
+      calc((100vw - 12px) / 420px),
+      calc((100dvh - 12px) / 666px)
+    );
+  }
+
+  .ticket-page > .phone-screen {
+    --ticket-scale: min(
+      1,
+      calc((100vw - 12px) / 340px),
+      calc((100dvh - 12px) / 812px)
+    );
+  }
+
+  .yey-page > .phone-screen {
+    --yey-scale: min(
+      1,
+      calc((100vw - 12px) / 420px),
+      calc((100dvh - 12px) / 350px)
+    );
+  }
+}
+
+/* Ensure all interactive controls remain tappable after scaling and never
+   create a horizontal page overflow. */
+button,
+input,
+select {
+  max-width: 100%;
+}
+
+img {
+  max-width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* V18.1 correction: remove legacy max-width/inner-transform constraints that
+   otherwise cause double-scaling or clip the complete fitted unit. */
+.landing-page > .phone-screen,
+.date-page > .phone-screen,
+.ticket-page > .phone-screen,
+.yey-page > .phone-screen {
+  max-width: none !important;
+}
+
+.landing-page .invitation-container,
+.date-page .invitation-container,
+.ticket-page .ticket-wrapper,
+.yey-page .invitation-container {
+  transform: none !important;
+}
+
+.date-page .invitation-container {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+
+/* V18.2 — transformed page canvases must be centered by the viewport, not
+   aligned by legacy short-screen media rules. */
+.landing-page,
+.date-page,
+.ticket-page,
+.yey-page {
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Fixed overlays are viewport-level elements after being moved outside the
+   transformed page canvas. */
+.envelope-intro,
+.picker-overlay,
+.schedule-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  transform: none !important;
+}
+
+
+/* V18.3 — very small picker dialogs: scale the complete dialog uniformly
+   when its source width/height cannot physically fit. */
+@media (max-width: 430px), (max-height: 500px) {
+  .picker-modal,
+  .time-picker-modal {
+    --picker-scale: min(
+      1,
+      calc((100vw - 16px) / 420px),
+      calc((100dvh - 16px) / 500px)
+    );
+    transform: scale(var(--picker-scale)) !important;
+    transform-origin: center center;
+  }
+}
+
+
+/* No internal page scrolling: dialogs are fitted to the viewport as well. */
+.schedule-modal {
+  overflow: hidden !important;
+}

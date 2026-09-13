@@ -184,7 +184,22 @@ function changeSadCatImage() {
 
 function growYesButton() {
   noClickCount++;
-  yesScale = 1 + noClickCount * 0.12;
+
+  // Keep the growing YES button inside even after many NO presses.
+  const viewport = getNoButtonViewport();
+  const baseWidth = yesButton ? yesButton.offsetWidth : 62;
+  const baseHeight = yesButton ? yesButton.offsetHeight : 35;
+  const maxScale = Math.max(
+    1,
+    Math.min(
+      1.8,
+      (viewport.right - viewport.left - 24) / baseWidth,
+      (viewport.bottom - viewport.top - 24) / baseHeight
+    )
+  );
+
+  yesScale = Math.min(1 + noClickCount * 0.12, maxScale);
+
   if (yesButton) yesButton.style.transform = `scale(${yesScale})`;
 }
 
