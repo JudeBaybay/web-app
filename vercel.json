@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "headers": [
     {
-      "source": "/api/send-ticket",
+      "source": "api/send-ticket",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
