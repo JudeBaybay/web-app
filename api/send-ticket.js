@@ -1,4 +1,15 @@
 export default async function handler(req, res) {
+  // Allow the GitHub Pages frontend to call this Vercel API
+  res.setHeader("Access-Control-Allow-Origin", "https://judebaybay.github.io");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Max-Age", "86400");
+
+  // Handle browser CORS preflight request
+  if (req.method === "OPTIONS") {
+    return res.status(204).end();
+  }
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed." });
   }
@@ -7,11 +18,19 @@ export default async function handler(req, res) {
     const { image, filename, date, time } = req.body || {};
 
     if (!image) {
-      return res.status(400).json({ error: "Ticket image is required." });
+      return res.status(400).json({
+        error: "Ticket image is required.",
+      });
     }
 
-    if (!process.env.RESEND_API_KEY || !process.env.TICKET_TO_EMAIL || !process.env.TICKET_FROM_EMAIL) {
-      return res.status(500).json({ error: "Email service is not configured." });
+    if (
+      !process.env.RESEND_API_KEY ||
+      !process.env.TICKET_TO_EMAIL ||
+      !process.env.TICKET_FROM_EMAIL
+    ) {
+      return res.status(500).json({
+        error: "Email service is not configured.",
+      });
     }
 
     const response = await fetch("https://api.resend.com/emails", {
@@ -24,11 +43,23 @@ export default async function handler(req, res) {
         from: process.env.TICKET_FROM_EMAIL,
         to: [process.env.TICKET_TO_EMAIL],
         subject: "New Date Ticket",
-        html: `<p>A new date ticket was sent from the website.</p><p><strong>Date:</strong> ${escapeHtml(date || "")}</p><p><strong>Time:</strong> ${escapeHtml(time || "")}</p>`,
-        attachments: [{
-          filename: filename || "your-date-ticket.png",
-          content: image,
-        }],
+        html: `
+          <p>A new date ticket was sent from the website.</p>
+          <p>
+            <strong>Date:</strong>
+            ${escapeHtml(date || "")}
+          </p>
+          <p>
+            <strong>Time:</strong>
+            ${escapeHtml(time || "")}
+          </p>
+        `,
+        attachments: [
+          {
+            filename: filename || "your-date-ticket.png",
+            content: image,
+          },
+        ],
       }),
     });
 
@@ -36,13 +67,22 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       console.error("Resend error:", result);
-      return res.status(response.status).json({ error: result.message || "Resend could not send the email." });
+
+      return res.status(response.status).json({
+        error: result.message || "Resend could not send the email.",
+      });
     }
 
-    return res.status(200).json({ ok: true, id: result.id });
+    return res.status(200).json({
+      ok: true,
+      id: result.id,
+    });
   } catch (error) {
     console.error("Ticket email error:", error);
-    return res.status(500).json({ error: "Unable to send ticket." });
+
+    return res.status(500).json({
+      error: "Unable to send ticket.",
+    });
   }
 }
 
