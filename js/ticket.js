@@ -68,85 +68,260 @@ async function waitForTicketAssets() {
 }
 
 async function createTicketBlob() {
+  /*
+   * V25 — DEVICE-INDEPENDENT TICKET EXPORT
+   *
+   * Do NOT capture the responsive #ticket element directly.
+   *
+   * The visible ticket is intentionally responsive and can be scaled by
+   * .ticket-wrapper/.phone-screen depending on the device. html2canvas can
+   * inherit those responsive transforms and iOS Safari viewport metrics,
+   * which causes the exported PNG to be compressed, clipped, or laid out
+   * incorrectly.
+   *
+   * Instead, create a completely independent 340x560 export artwork with
+   * fixed pixel coordinates. It is then rendered at 3x = 1020x1680.
+   *
+   * The exported artwork therefore has exactly the same dimensions and
+   * composition on every phone, tablet, laptop, and desktop.
+   */
   await waitForTicketAssets();
 
-  /*
-   * IMPORTANT FOR iOS SAFARI:
-   *
-   * ticket is inside .ticket-wrapper, and .ticket-wrapper is itself scaled
-   * to fit short viewports. html2canvas can inherit that ancestor transform
-   * even when we explicitly set the ticket element to 340x560. On an iPhone
-   * this can make the captured ticket occupy only part of the 340x560 canvas,
-   * leaving a large blank area and making the typography appear distorted.
-   *
-   * During image generation we therefore temporarily remove ALL transforms
-   * from the ticket's ancestor wrapper and force the artwork to its canonical
-   * 340x560 CSS size. The generated PNG is always 1020x1680 (3x).
-   */
-  const wrapper = ticket.closest('.ticket-wrapper');
-  const phoneScreen = ticket.closest('.phone-screen');
-
-  const saved = {
-    ticketWidth: ticket.style.width,
-    ticketHeight: ticket.style.height,
-    ticketMinWidth: ticket.style.minWidth,
-    ticketMinHeight: ticket.style.minHeight,
-    ticketMaxWidth: ticket.style.maxWidth,
-    ticketMaxHeight: ticket.style.maxHeight,
-    ticketTransform: ticket.style.transform,
-    wrapperWidth: wrapper ? wrapper.style.width : '',
-    wrapperHeight: wrapper ? wrapper.style.height : '',
-    wrapperMinWidth: wrapper ? wrapper.style.minWidth : '',
-    wrapperMinHeight: wrapper ? wrapper.style.minHeight : '',
-    wrapperMaxWidth: wrapper ? wrapper.style.maxWidth : '',
-    wrapperMaxHeight: wrapper ? wrapper.style.maxHeight : '',
-    wrapperFlex: wrapper ? wrapper.style.flex : '',
-    wrapperTransform: wrapper ? wrapper.style.transform : '',
-    wrapperScale: wrapper ? wrapper.style.getPropertyValue('--ticket-scale') : '',
-    phoneTransform: phoneScreen ? phoneScreen.style.transform : '',
-    phoneTicketScale: phoneScreen ? phoneScreen.style.getPropertyValue('--ticket-scale') : '',
-  };
-
-  // Prevent a visible transition/flicker while the capture-only layout is set.
-  document.documentElement.classList.add('ticket-capturing');
-
-  ticket.style.width = '340px';
-  ticket.style.height = '560px';
-  ticket.style.minWidth = '340px';
-  ticket.style.minHeight = '560px';
-  ticket.style.maxWidth = '340px';
-  ticket.style.maxHeight = '560px';
-  ticket.style.transform = 'none';
-
-  if (wrapper) {
-    wrapper.style.width = '340px';
-    wrapper.style.height = '560px';
-    wrapper.style.minWidth = '340px';
-    wrapper.style.minHeight = '560px';
-    wrapper.style.maxWidth = '340px';
-    wrapper.style.maxHeight = '560px';
-    wrapper.style.flex = '0 0 560px';
-    wrapper.style.transform = 'none';
-    wrapper.style.setProperty('--ticket-scale', '1');
+  const sourceCat = document.getElementById("happyCatImage");
+  if (!sourceCat || !sourceCat.src) {
+    throw new Error("The ticket image could not be found.");
   }
 
-  // The page-level .phone-screen also has a responsive transform in the
-  // stylesheet. html2canvas captures that ancestor transform, which can
-  // shrink the entire ticket even though #ticket itself is 340x560.
-  // Neutralize it for the capture as well.
-  if (phoneScreen) {
-    phoneScreen.style.transform = 'none';
-    phoneScreen.style.setProperty('--ticket-scale', '1');
-  }
+  const exportCard = document.createElement("div");
 
-  let canvas;
+  // No ticket-page/ticket-wrapper/ticket-card classes are used here.
+  // This prevents the large responsive CSS file from changing the export.
+  Object.assign(exportCard.style, {
+    position: "fixed",
+    left: "-10000px",
+    top: "0",
+    width: "340px",
+    height: "560px",
+    boxSizing: "border-box",
+    overflow: "hidden",
+    background: "#ebe9df",
+    border: "3px solid #2b2823",
+    borderRadius: "11px",
+    boxShadow: "3px 3px 0 #2b2823",
+    margin: "0",
+    padding: "0",
+    transform: "none",
+    display: "block",
+    zIndex: "-1",
+  });
+
+  // The export is deliberately composed with absolute coordinates. This
+  // avoids flex/grid/viewport-dependent text measurement during html2canvas.
+  const title = document.createElement("div");
+  Object.assign(title.style, {
+    position: "absolute",
+    left: "0",
+    top: "17px",
+    width: "334px",
+    height: "92px",
+    margin: "0",
+    padding: "0",
+    fontFamily: '"Playfair Display", Georgia, serif',
+    fontStyle: "italic",
+    fontWeight: "700",
+    fontSize: "50px",
+    lineHeight: "0.92",
+    textAlign: "center",
+    color: "#2b2823",
+    whiteSpace: "nowrap",
+  });
+  title.innerHTML = "YOUR<br>TICKET !";
+
+  const firstLine = document.createElement("div");
+  Object.assign(firstLine.style, {
+    position: "absolute",
+    left: "30px",
+    top: "127px",
+    width: "280px",
+    height: "1px",
+    margin: "0",
+    padding: "0",
+    background: "#000000",
+  });
+
+  const dateLine = document.createElement("div");
+  Object.assign(dateLine.style, {
+    position: "absolute",
+    left: "0",
+    top: "188px",
+    width: "334px",
+    height: "38px",
+    margin: "0",
+    padding: "0",
+    display: "flex",
+    alignItems: "baseline",
+    justifyContent: "center",
+    gap: "4px",
+    fontFamily: '"Patrick Hand", cursive',
+    fontSize: "30px",
+    lineHeight: "1.1",
+    color: "#2b2823",
+    whiteSpace: "nowrap",
+  });
+
+  const dateLabel = document.createElement("strong");
+  dateLabel.textContent = "Date:";
+  Object.assign(dateLabel.style, {
+    display: "inline-block",
+    fontWeight: "700",
+    flex: "0 0 auto",
+  });
+
+  const dateValue = document.createElement("span");
+  dateValue.textContent = ticketDate.textContent;
+  Object.assign(dateValue.style, {
+    display: "inline-block",
+    fontWeight: "400",
+    flex: "0 0 auto",
+  });
+
+  dateLine.append(dateLabel, dateValue);
+
+  const timeLine = document.createElement("div");
+  Object.assign(timeLine.style, {
+    position: "absolute",
+    left: "0",
+    top: "255px",
+    width: "334px",
+    height: "38px",
+    margin: "0",
+    padding: "0",
+    display: "flex",
+    alignItems: "baseline",
+    justifyContent: "center",
+    gap: "4px",
+    fontFamily: '"Patrick Hand", cursive',
+    fontSize: "30px",
+    lineHeight: "1.1",
+    color: "#2b2823",
+    whiteSpace: "nowrap",
+  });
+
+  const timeLabel = document.createElement("strong");
+  timeLabel.textContent = "Time:";
+  Object.assign(timeLabel.style, {
+    display: "inline-block",
+    fontWeight: "700",
+    flex: "0 0 auto",
+  });
+
+  const timeValue = document.createElement("span");
+  timeValue.textContent = ticketTime.textContent;
+  Object.assign(timeValue.style, {
+    display: "inline-block",
+    fontWeight: "400",
+    flex: "0 0 auto",
+  });
+
+  timeLine.append(timeLabel, timeValue);
+
+  const secondLine = document.createElement("div");
+  Object.assign(secondLine.style, {
+    position: "absolute",
+    left: "30px",
+    top: "335px",
+    width: "280px",
+    height: "1px",
+    margin: "0",
+    padding: "0",
+    background: "#000000",
+  });
+
+  const seeYou = document.createElement("div");
+  Object.assign(seeYou.style, {
+    position: "absolute",
+    left: "30px",
+    bottom: "50px",
+    width: "145px",
+    height: "110px",
+    margin: "0",
+    padding: "0",
+    fontFamily: '"Playfair Display", Georgia, serif',
+    fontStyle: "italic",
+    fontWeight: "700",
+    fontSize: "50px",
+    lineHeight: "0.88",
+    textAlign: "left",
+    color: "#2b2823",
+    whiteSpace: "nowrap",
+  });
+  seeYou.innerHTML = "SEE<br>YOU!";
+
+  const cat = document.createElement("div");
+  Object.assign(cat.style, {
+    position: "absolute",
+    right: "17px",
+    bottom: "32px",
+    width: "145px",
+    height: "145px",
+    margin: "0",
+    padding: "0",
+    boxSizing: "border-box",
+    border: "2.5px solid #2b2823",
+    borderRadius: "9px",
+    overflow: "hidden",
+    background: "#ebe7dc",
+  });
+
+  const catImage = document.createElement("img");
+  catImage.src = sourceCat.currentSrc || sourceCat.src;
+  catImage.alt = "";
+  Object.assign(catImage.style, {
+    width: "100%",
+    height: "100%",
+    display: "block",
+    objectFit: "cover",
+    margin: "0",
+    padding: "0",
+  });
+  cat.appendChild(catImage);
+
+  exportCard.append(
+    title,
+    firstLine,
+    dateLine,
+    timeLine,
+    secondLine,
+    seeYou,
+    cat
+  );
+
+  document.body.appendChild(exportCard);
 
   try {
-    // Wait one animation frame so Safari has applied the capture-only layout
-    // before html2canvas measures any element.
+    // Wait for the export image itself as well as the already-loaded source.
+    if (!catImage.complete || catImage.naturalWidth === 0) {
+      await new Promise((resolve) => {
+        catImage.addEventListener("load", resolve, { once: true });
+        catImage.addEventListener("error", resolve, { once: true });
+      });
+    }
+
+    // Make absolutely sure the fonts are ready before html2canvas measures text.
+    if (document.fonts) {
+      await Promise.all([
+        document.fonts.load('700 italic 50px "Playfair Display"'),
+        document.fonts.load('400 30px "Patrick Hand"'),
+        document.fonts.load('700 30px "Patrick Hand"'),
+        document.fonts.ready,
+      ]);
+    }
+
+    // Give Safari one layout pass after the export DOM is inserted.
+    await new Promise((resolve) => requestAnimationFrame(resolve));
     await new Promise((resolve) => requestAnimationFrame(resolve));
 
-    canvas = await html2canvas(ticket, {
+    const canvas = await html2canvas(exportCard, {
       scale: 3,
       width: 340,
       height: 560,
@@ -154,87 +329,26 @@ async function createTicketBlob() {
       y: 0,
       scrollX: 0,
       scrollY: 0,
+      windowWidth: 340,
+      windowHeight: 560,
       useCORS: true,
       allowTaint: false,
-      backgroundColor: '#ebe9df',
+      backgroundColor: "#ebe9df",
       logging: false,
-      onclone: (clonedDocument) => {
-        // Belt-and-suspenders protection: html2canvas creates a cloned DOM.
-        // Neutralize any inherited transform in the clone as well.
-        const clonedTicket = clonedDocument.getElementById('ticket');
-        if (clonedTicket) {
-          clonedTicket.style.width = '340px';
-          clonedTicket.style.height = '560px';
-          clonedTicket.style.minWidth = '340px';
-          clonedTicket.style.minHeight = '560px';
-          clonedTicket.style.maxWidth = '340px';
-          clonedTicket.style.maxHeight = '560px';
-          clonedTicket.style.transform = 'none';
-        }
+    });
 
-        const clonedPhoneScreen = clonedTicket?.closest('.phone-screen');
-        if (clonedPhoneScreen) {
-          clonedPhoneScreen.style.transform = 'none';
-          clonedPhoneScreen.style.setProperty('--ticket-scale', '1');
+    return await new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error("Unable to create the ticket image."));
         }
-
-        const clonedWrapper = clonedTicket?.closest('.ticket-wrapper');
-        if (clonedWrapper) {
-          clonedWrapper.style.width = '340px';
-          clonedWrapper.style.height = '560px';
-          clonedWrapper.style.minWidth = '340px';
-          clonedWrapper.style.minHeight = '560px';
-          clonedWrapper.style.maxWidth = '340px';
-          clonedWrapper.style.maxHeight = '560px';
-          clonedWrapper.style.flex = '0 0 560px';
-          clonedWrapper.style.transform = 'none';
-          clonedWrapper.style.setProperty('--ticket-scale', '1');
-        }
-      },
+      }, "image/png");
     });
   } finally {
-    ticket.style.width = saved.ticketWidth;
-    ticket.style.height = saved.ticketHeight;
-    ticket.style.minWidth = saved.ticketMinWidth;
-    ticket.style.minHeight = saved.ticketMinHeight;
-    ticket.style.maxWidth = saved.ticketMaxWidth;
-    ticket.style.maxHeight = saved.ticketMaxHeight;
-    ticket.style.transform = saved.ticketTransform;
-
-    if (wrapper) {
-      wrapper.style.width = saved.wrapperWidth;
-      wrapper.style.height = saved.wrapperHeight;
-      wrapper.style.minWidth = saved.wrapperMinWidth;
-      wrapper.style.minHeight = saved.wrapperMinHeight;
-      wrapper.style.maxWidth = saved.wrapperMaxWidth;
-      wrapper.style.maxHeight = saved.wrapperMaxHeight;
-      wrapper.style.flex = saved.wrapperFlex;
-      wrapper.style.transform = saved.wrapperTransform;
-      if (saved.wrapperScale) {
-        wrapper.style.setProperty('--ticket-scale', saved.wrapperScale);
-      } else {
-        wrapper.style.removeProperty('--ticket-scale');
-      }
-    }
-
-    if (phoneScreen) {
-      phoneScreen.style.transform = saved.phoneTransform;
-      if (saved.phoneTicketScale) {
-        phoneScreen.style.setProperty('--ticket-scale', saved.phoneTicketScale);
-      } else {
-        phoneScreen.style.removeProperty('--ticket-scale');
-      }
-    }
-
-    document.documentElement.classList.remove('ticket-capturing');
+    exportCard.remove();
   }
-
-  return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      if (blob) resolve(blob);
-      else reject(new Error('Unable to create the ticket image.'));
-    }, 'image/png');
-  });
 }
 
 downloadButton.addEventListener("click", async function () {
