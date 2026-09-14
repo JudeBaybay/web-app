@@ -70,56 +70,145 @@ async function waitForTicketAssets() {
 async function createTicketBlob() {
   await waitForTicketAssets();
 
-  // Temporarily force the artwork to its canonical 340x560 dimensions while
-  // capturing. This prevents responsive viewport rules from changing the
-  // YOUR TICKET! / SEE YOU! typography on iOS Safari.
-  const previousWidth = ticket.style.width;
-  const previousHeight = ticket.style.height;
-  const previousMinWidth = ticket.style.minWidth;
-  const previousMinHeight = ticket.style.minHeight;
-  const previousMaxWidth = ticket.style.maxWidth;
-  const previousMaxHeight = ticket.style.maxHeight;
-  const previousTransform = ticket.style.transform;
+  /*
+   * IMPORTANT FOR iOS SAFARI:
+   *
+   * ticket is inside .ticket-wrapper, and .ticket-wrapper is itself scaled
+   * to fit short viewports. html2canvas can inherit that ancestor transform
+   * even when we explicitly set the ticket element to 340x560. On an iPhone
+   * this can make the captured ticket occupy only part of the 340x560 canvas,
+   * leaving a large blank area and making the typography appear distorted.
+   *
+   * During image generation we therefore temporarily remove ALL transforms
+   * from the ticket's ancestor wrapper and force the artwork to its canonical
+   * 340x560 CSS size. The generated PNG is always 1020x1680 (3x).
+   */
+  const wrapper = ticket.closest('.ticket-wrapper');
 
-  ticket.style.width = "340px";
-  ticket.style.height = "560px";
-  ticket.style.minWidth = "340px";
-  ticket.style.minHeight = "560px";
-  ticket.style.maxWidth = "340px";
-  ticket.style.maxHeight = "560px";
-  ticket.style.transform = "none";
+  const saved = {
+    ticketWidth: ticket.style.width,
+    ticketHeight: ticket.style.height,
+    ticketMinWidth: ticket.style.minWidth,
+    ticketMinHeight: ticket.style.minHeight,
+    ticketMaxWidth: ticket.style.maxWidth,
+    ticketMaxHeight: ticket.style.maxHeight,
+    ticketTransform: ticket.style.transform,
+    wrapperWidth: wrapper ? wrapper.style.width : '',
+    wrapperHeight: wrapper ? wrapper.style.height : '',
+    wrapperMinWidth: wrapper ? wrapper.style.minWidth : '',
+    wrapperMinHeight: wrapper ? wrapper.style.minHeight : '',
+    wrapperMaxWidth: wrapper ? wrapper.style.maxWidth : '',
+    wrapperMaxHeight: wrapper ? wrapper.style.maxHeight : '',
+    wrapperFlex: wrapper ? wrapper.style.flex : '',
+    wrapperTransform: wrapper ? wrapper.style.transform : '',
+    wrapperScale: wrapper ? wrapper.style.getPropertyValue('--ticket-scale') : '',
+  };
+
+  // Prevent a visible transition/flicker while the capture-only layout is set.
+  document.documentElement.classList.add('ticket-capturing');
+
+  ticket.style.width = '340px';
+  ticket.style.height = '560px';
+  ticket.style.minWidth = '340px';
+  ticket.style.minHeight = '560px';
+  ticket.style.maxWidth = '340px';
+  ticket.style.maxHeight = '560px';
+  ticket.style.transform = 'none';
+
+  if (wrapper) {
+    wrapper.style.width = '340px';
+    wrapper.style.height = '560px';
+    wrapper.style.minWidth = '340px';
+    wrapper.style.minHeight = '560px';
+    wrapper.style.maxWidth = '340px';
+    wrapper.style.maxHeight = '560px';
+    wrapper.style.flex = '0 0 560px';
+    wrapper.style.transform = 'none';
+    wrapper.style.setProperty('--ticket-scale', '1');
+  }
 
   let canvas;
 
   try {
+    // Wait one animation frame so Safari has applied the capture-only layout
+    // before html2canvas measures any element.
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
     canvas = await html2canvas(ticket, {
-      // Render the ticket at its canonical 340x560 CSS size. This keeps the PNG
-      // independent of the iPhone viewport and device-pixel ratio.
       scale: 3,
       width: 340,
       height: 560,
       windowWidth: 340,
       windowHeight: 560,
-    useCORS: true,
-    allowTaint: false,
-    backgroundColor: "#ebe9df",
+      x: 0,
+      y: 0,
+      scrollX: 0,
+      scrollY: 0,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#ebe9df',
       logging: false,
+      onclone: (clonedDocument) => {
+        // Belt-and-suspenders protection: html2canvas creates a cloned DOM.
+        // Neutralize any inherited transform in the clone as well.
+        const clonedTicket = clonedDocument.getElementById('ticket');
+        if (clonedTicket) {
+          clonedTicket.style.width = '340px';
+          clonedTicket.style.height = '560px';
+          clonedTicket.style.minWidth = '340px';
+          clonedTicket.style.minHeight = '560px';
+          clonedTicket.style.maxWidth = '340px';
+          clonedTicket.style.maxHeight = '560px';
+          clonedTicket.style.transform = 'none';
+        }
+
+        const clonedWrapper = clonedTicket?.closest('.ticket-wrapper');
+        if (clonedWrapper) {
+          clonedWrapper.style.width = '340px';
+          clonedWrapper.style.height = '560px';
+          clonedWrapper.style.minWidth = '340px';
+          clonedWrapper.style.minHeight = '560px';
+          clonedWrapper.style.maxWidth = '340px';
+          clonedWrapper.style.maxHeight = '560px';
+          clonedWrapper.style.flex = '0 0 560px';
+          clonedWrapper.style.transform = 'none';
+          clonedWrapper.style.setProperty('--ticket-scale', '1');
+        }
+      },
     });
   } finally {
-    ticket.style.width = previousWidth;
-    ticket.style.height = previousHeight;
-    ticket.style.minWidth = previousMinWidth;
-    ticket.style.minHeight = previousMinHeight;
-    ticket.style.maxWidth = previousMaxWidth;
-    ticket.style.maxHeight = previousMaxHeight;
-    ticket.style.transform = previousTransform;
+    ticket.style.width = saved.ticketWidth;
+    ticket.style.height = saved.ticketHeight;
+    ticket.style.minWidth = saved.ticketMinWidth;
+    ticket.style.minHeight = saved.ticketMinHeight;
+    ticket.style.maxWidth = saved.ticketMaxWidth;
+    ticket.style.maxHeight = saved.ticketMaxHeight;
+    ticket.style.transform = saved.ticketTransform;
+
+    if (wrapper) {
+      wrapper.style.width = saved.wrapperWidth;
+      wrapper.style.height = saved.wrapperHeight;
+      wrapper.style.minWidth = saved.wrapperMinWidth;
+      wrapper.style.minHeight = saved.wrapperMinHeight;
+      wrapper.style.maxWidth = saved.wrapperMaxWidth;
+      wrapper.style.maxHeight = saved.wrapperMaxHeight;
+      wrapper.style.flex = saved.wrapperFlex;
+      wrapper.style.transform = saved.wrapperTransform;
+      if (saved.wrapperScale) {
+        wrapper.style.setProperty('--ticket-scale', saved.wrapperScale);
+      } else {
+        wrapper.style.removeProperty('--ticket-scale');
+      }
+    }
+
+    document.documentElement.classList.remove('ticket-capturing');
   }
 
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
       if (blob) resolve(blob);
-      else reject(new Error("Unable to create the ticket image."));
-    }, "image/png");
+      else reject(new Error('Unable to create the ticket image.'));
+    }, 'image/png');
   });
 }
 

@@ -4091,3 +4091,117 @@ img {
 .send-ticket-button {
   flex: 0 0 auto;
 }
+
+/* ================================================================
+   V22 — TICKET SHORT-HEIGHT / CLIPPING FIX
+   The ticket page contains more than the 560px artwork: it also has the
+   back, download, send, and status controls. The previous final override
+   accidentally gave .ticket-wrapper a 340px flex-basis, so the wrapper's
+   controls could extend beyond the viewport and be clipped by the phone
+   screen's overflow:hidden.
+
+   Keep the complete ticket composition as one canonical 340x812 unit:
+   48 back + 14 gap + 560 ticket + 16 gap + 80 download + 12 gap +
+   52 send + 8 gap + 21 status = 811px.
+   The whole unit is then uniformly scaled according to BOTH viewport width
+   and height. No page scrolling is introduced.
+   ================================================================ */
+.ticket-page {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  max-height: 100dvh !important;
+  padding: 8px !important;
+  overflow: hidden !important;
+}
+
+.ticket-page .phone-screen {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: calc(100dvh - 16px) !important;
+  min-height: 0 !important;
+  max-height: calc(100dvh - 16px) !important;
+  flex: 0 0 calc(100dvh - 16px) !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.ticket-page .ticket-wrapper {
+  box-sizing: border-box !important;
+  width: 340px !important;
+  height: 812px !important;
+  min-width: 340px !important;
+  min-height: 812px !important;
+  max-width: 340px !important;
+  max-height: 812px !important;
+  flex: 0 0 812px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  overflow: visible !important;
+  transform-origin: center center !important;
+}
+
+/* The wrapper is the scaled unit. The artwork itself remains exactly
+   340x560, so YOUR TICKET!, SEE YOU!, the date/time, and cat retain their
+   established proportions. */
+.ticket-page .ticket-card {
+  flex: 0 0 560px !important;
+}
+
+@media (max-width: 699px) {
+  .ticket-page .ticket-wrapper {
+    --ticket-scale: min(
+      1,
+      calc((100vw - 16px) / 340px),
+      calc((100dvh - 16px) / 812px)
+    ) !important;
+    transform: scale(var(--ticket-scale)) !important;
+  }
+}
+
+@media (min-width: 700px) {
+  .ticket-page .ticket-wrapper {
+    --ticket-scale: min(
+      1,
+      calc((100vw - 40px) / 340px),
+      calc((100dvh - 40px) / 812px)
+    ) !important;
+    transform: scale(var(--ticket-scale)) !important;
+  }
+}
+
+/* Landscape uses the same height-aware calculation. This guarantees that
+   short landscape viewports show the entire composition instead of clipping
+   its bottom controls. */
+@media (orientation: landscape) {
+  .ticket-page .ticket-wrapper {
+    --ticket-scale: min(
+      1,
+      calc((100vw - 16px) / 340px),
+      calc((100dvh - 16px) / 812px)
+    ) !important;
+  }
+}
+
+/* Do not let legacy short-screen rules reintroduce scrolling or a different
+   wrapper height after this final override. */
+@media (max-height: 700px) {
+  .ticket-page,
+  .ticket-page .phone-screen {
+    overflow: hidden !important;
+  }
+}
+
+
+/* Image-generation mode: html2canvas captures #ticket at its canonical
+   dimensions. Disable visual transitions while the temporary capture layout
+   is applied so iOS Safari does not capture an intermediate state. */
+.ticket-capturing * {
+  transition: none !important;
+  animation: none !important;
+}
