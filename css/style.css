@@ -1041,9 +1041,34 @@ body.schedule-modal-open {
   text-align: center;
 }
 
+/* Keep generated-ticket text in explicit flex rows. This avoids Safari/iOS
+   and html2canvas collapsing the whitespace between the label and value. */
+.ticket-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  white-space: nowrap;
+  font-size: 30px;
+  line-height: 1.1;
+  font-family: "Patrick Hand", cursive;
+  text-align: center;
+}
+
+.ticket-line strong,
+.ticket-line span {
+  display: inline-block;
+  flex: 0 0 auto;
+}
+
 .ticket-spacing {
   margin-top: 60px;
   margin-bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 33px;
 }
 
 .line-dash {
@@ -3942,4 +3967,127 @@ img {
 /* No internal page scrolling: dialogs are fitted to the viewport as well. */
 .schedule-modal {
   overflow: hidden !important;
+}
+
+/* ================================================================
+   FINAL TICKET RESPONSIVENESS OVERRIDE
+   Keep the ticket artwork itself at one canonical 340x560 design.
+   Smaller viewports scale the COMPLETE ticket as a unit instead of
+   independently changing YOUR TICKET!, SEE YOU!, text, and cat.
+   This also keeps html2canvas/iOS rendering consistent.
+   ================================================================ */
+.ticket-page {
+  overflow: hidden !important;
+  padding: 8px !important;
+}
+
+.ticket-page .phone-screen {
+  width: 100% !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.ticket-wrapper {
+  --ticket-scale: 1;
+  width: 340px !important;
+  max-width: none !important;
+  height: 560px !important;
+  flex: 0 0 340px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  transform: scale(var(--ticket-scale));
+  transform-origin: center center;
+}
+
+.ticket-card {
+  width: 340px !important;
+  height: 560px !important;
+  min-width: 340px !important;
+  min-height: 560px !important;
+  max-width: 340px !important;
+  max-height: 560px !important;
+  aspect-ratio: auto !important;
+  padding: 20px 16px 16px !important;
+  flex: 0 0 340px !important;
+}
+
+/* Fixed artwork typography. Do not use vw/clamp here: those values make
+   iOS Safari and html2canvas calculate different font sizes. */
+.ticket-title {
+  width: 100% !important;
+  font-size: 50px !important;
+  line-height: 0.92 !important;
+  margin: 0 0 15px !important;
+}
+
+.ticket-information {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 6px 0 !important;
+}
+
+.ticket-line {
+  width: 100% !important;
+  display: flex !important;
+  align-items: baseline !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  white-space: nowrap !important;
+  font-size: 30px !important;
+  line-height: 1.1 !important;
+}
+
+.ticket-spacing {
+  margin-top: 60px !important;
+  margin-bottom: 60px !important;
+  gap: 33px !important;
+}
+
+.see-you {
+  left: 30px !important;
+  bottom: 50px !important;
+  font-size: 50px !important;
+  line-height: 0.88 !important;
+}
+
+.happy-cat {
+  right: 17px !important;
+  bottom: 32px !important;
+  width: 145px !important;
+  height: 145px !important;
+}
+
+/* Fit the whole ticket to the viewport. The artwork remains 340x560; only
+   the outer wrapper is uniformly scaled. Width and height are both considered
+   so portrait and landscape devices stay fully visible without scrolling. */
+@media (max-width: 699px) {
+  .ticket-wrapper {
+    --ticket-scale: min(
+      1,
+      calc((100vw - 16px) / 340),
+      calc((100dvh - 16px) / 560)
+    );
+  }
+}
+
+@media (min-width: 700px) {
+  .ticket-wrapper {
+    --ticket-scale: min(
+      1,
+      calc((100vw - 40px) / 340),
+      calc((100dvh - 40px) / 560)
+    );
+  }
+}
+
+/* The download/send controls are outside the 340x560 artwork. Keep them
+   readable and scale them separately without changing the ticket artwork. */
+.download-button,
+.send-ticket-button {
+  flex: 0 0 auto;
 }

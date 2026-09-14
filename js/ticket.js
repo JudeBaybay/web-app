@@ -22,7 +22,7 @@ if (!selectedDate || !selectedTime) {
 } else {
   const date = new Date(selectedDate + "T00:00:00");
 
-  ticketDate.textContent = date.toLocaleDateString(undefined, {
+  ticketDate.textContent = date.toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -45,76 +45,75 @@ if (!selectedDate || !selectedTime) {
   ticketTime.textContent = `${hour}:${String(minute).padStart(2, "0")} ${period}`;
 }
 
-downloadButton.addEventListener("click", async function () {
-  const originalText = downloadButton.textContent;
-
-  downloadButton.textContent = "Creating image...";
-
-  downloadButton.disabled = true;
-
-  try {
-    const canvas = await html2canvas(ticket, {
-      scale: 3,
-      useCORS: true,
-      allowTaint: false,
-      backgroundColor: "#f7f4ea",
-      logging: false,
-    });
-
-    canvas.toBlob(function (blob) {
-      if (!blob) {
-        downloadButton.textContent = originalText;
-
-        downloadButton.disabled = false;
-
-        return;
-      }
-
-      const imageUrl = URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-
-      link.href = imageUrl;
-
-      link.download = "your-date-ticket.png";
-
-      document.body.appendChild(link);
-
-      link.click();
-
-      document.body.removeChild(link);
-
-      setTimeout(function () {
-        URL.revokeObjectURL(imageUrl);
-      }, 1000);
-
-      downloadButton.textContent = originalText;
-
-      downloadButton.disabled = false;
-    }, "image/png");
-  } catch (error) {
-    console.error("Ticket image generation failed:", error);
-
-    downloadButton.textContent = "Try Again";
-
-    downloadButton.disabled = false;
+async function waitForTicketAssets() {
+  // iOS Safari can give html2canvas fallback font metrics if capture starts
+  // before the web fonts are ready. Wait for the exact ticket fonts and image.
+  if (document.fonts) {
+    await Promise.all([
+      document.fonts.load('700 italic 50px "Playfair Display"'),
+      document.fonts.load('400 30px "Patrick Hand"'),
+      document.fonts.load('700 30px "Patrick Hand"'),
+      document.fonts.ready,
+    ]);
   }
-});
 
-
-const SEND_TICKET_API_URL = "https://web-app-nine-amber.vercel.app/api/send-ticket";
-
-const sendTicketButton = document.getElementById("sendTicketButton");
-const sendTicketStatus = document.getElementById("sendTicketStatus");
+  const images = Array.from(ticket.querySelectorAll("img"));
+  await Promise.all(images.map((img) => {
+    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+    return new Promise((resolve) => {
+      img.addEventListener("load", resolve, { once: true });
+      img.addEventListener("error", resolve, { once: true });
+    });
+  }));
+}
 
 async function createTicketBlob() {
-  const canvas = await html2canvas(ticket, {
-    scale: 3,
+  await waitForTicketAssets();
+
+  // Temporarily force the artwork to its canonical 340x560 dimensions while
+  // capturing. This prevents responsive viewport rules from changing the
+  // YOUR TICKET! / SEE YOU! typography on iOS Safari.
+  const previousWidth = ticket.style.width;
+  const previousHeight = ticket.style.height;
+  const previousMinWidth = ticket.style.minWidth;
+  const previousMinHeight = ticket.style.minHeight;
+  const previousMaxWidth = ticket.style.maxWidth;
+  const previousMaxHeight = ticket.style.maxHeight;
+  const previousTransform = ticket.style.transform;
+
+  ticket.style.width = "340px";
+  ticket.style.height = "560px";
+  ticket.style.minWidth = "340px";
+  ticket.style.minHeight = "560px";
+  ticket.style.maxWidth = "340px";
+  ticket.style.maxHeight = "560px";
+  ticket.style.transform = "none";
+
+  let canvas;
+
+  try {
+    canvas = await html2canvas(ticket, {
+      // Render the ticket at its canonical 340x560 CSS size. This keeps the PNG
+      // independent of the iPhone viewport and device-pixel ratio.
+      scale: 3,
+      width: 340,
+      height: 560,
+      windowWidth: 340,
+      windowHeight: 560,
     useCORS: true,
     allowTaint: false,
-    backgroundColor: "#f7f4ea",
-    logging: false,
-  });
+    backgroundColor: "#ebe9df",
+      logging: false,
+    });
+  } finally {
+    ticket.style.width = previousWidth;
+    ticket.style.height = previousHeight;
+    ticket.style.minWidth = previousMinWidth;
+    ticket.style.minHeight = previousMinHeight;
+    ticket.style.maxWidth = previousMaxWidth;
+    ticket.style.maxHeight = previousMaxHeight;
+    ticket.style.transform = previousTransform;
+  }
 
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
@@ -123,6 +122,44 @@ async function createTicketBlob() {
     }, "image/png");
   });
 }
+
+downloadButton.addEventListener("click", async function () {
+  const originalText = downloadButton.textContent;
+
+  downloadButton.textContent = "Creating image...";
+  downloadButton.disabled = true;
+
+  try {
+    const blob = await createTicketBlob();
+    const imageUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = imageUrl;
+    link.download = "your-date-ticket.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setTimeout(function () {
+      URL.revokeObjectURL(imageUrl);
+    }, 1000);
+  } catch (error) {
+    console.error("Ticket image generation failed:", error);
+    downloadButton.textContent = "Try Again";
+    return;
+  } finally {
+    downloadButton.disabled = false;
+    if (downloadButton.textContent === "Creating image...") {
+      downloadButton.textContent = originalText;
+    }
+  }
+});
+
+
+const SEND_TICKET_API_URL = "https://web-app-nine-amber.vercel.app/api/send-ticket";
+
+const sendTicketButton = document.getElementById("sendTicketButton");
+const sendTicketStatus = document.getElementById("sendTicketStatus");
 
 function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
