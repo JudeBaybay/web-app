@@ -4205,3 +4205,12 @@ img {
   transition: none !important;
   animation: none !important;
 }
+
+/* V24 — generated-image capture safety. html2canvas captures the complete
+   ancestor chain, so the responsive page-level .phone-screen transform must
+   also be disabled while #ticket is being rendered. */
+.ticket-capturing .ticket-page .phone-screen,
+.ticket-capturing .ticket-page .ticket-wrapper,
+.ticket-capturing .ticket-page .ticket-card {
+  transform: none !important;
+}

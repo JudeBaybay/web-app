@@ -84,6 +84,7 @@ async function createTicketBlob() {
    * 340x560 CSS size. The generated PNG is always 1020x1680 (3x).
    */
   const wrapper = ticket.closest('.ticket-wrapper');
+  const phoneScreen = ticket.closest('.phone-screen');
 
   const saved = {
     ticketWidth: ticket.style.width,
@@ -102,6 +103,8 @@ async function createTicketBlob() {
     wrapperFlex: wrapper ? wrapper.style.flex : '',
     wrapperTransform: wrapper ? wrapper.style.transform : '',
     wrapperScale: wrapper ? wrapper.style.getPropertyValue('--ticket-scale') : '',
+    phoneTransform: phoneScreen ? phoneScreen.style.transform : '',
+    phoneTicketScale: phoneScreen ? phoneScreen.style.getPropertyValue('--ticket-scale') : '',
   };
 
   // Prevent a visible transition/flicker while the capture-only layout is set.
@@ -127,6 +130,15 @@ async function createTicketBlob() {
     wrapper.style.setProperty('--ticket-scale', '1');
   }
 
+  // The page-level .phone-screen also has a responsive transform in the
+  // stylesheet. html2canvas captures that ancestor transform, which can
+  // shrink the entire ticket even though #ticket itself is 340x560.
+  // Neutralize it for the capture as well.
+  if (phoneScreen) {
+    phoneScreen.style.transform = 'none';
+    phoneScreen.style.setProperty('--ticket-scale', '1');
+  }
+
   let canvas;
 
   try {
@@ -138,8 +150,6 @@ async function createTicketBlob() {
       scale: 3,
       width: 340,
       height: 560,
-      windowWidth: 340,
-      windowHeight: 560,
       x: 0,
       y: 0,
       scrollX: 0,
@@ -160,6 +170,12 @@ async function createTicketBlob() {
           clonedTicket.style.maxWidth = '340px';
           clonedTicket.style.maxHeight = '560px';
           clonedTicket.style.transform = 'none';
+        }
+
+        const clonedPhoneScreen = clonedTicket?.closest('.phone-screen');
+        if (clonedPhoneScreen) {
+          clonedPhoneScreen.style.transform = 'none';
+          clonedPhoneScreen.style.setProperty('--ticket-scale', '1');
         }
 
         const clonedWrapper = clonedTicket?.closest('.ticket-wrapper');
@@ -198,6 +214,15 @@ async function createTicketBlob() {
         wrapper.style.setProperty('--ticket-scale', saved.wrapperScale);
       } else {
         wrapper.style.removeProperty('--ticket-scale');
+      }
+    }
+
+    if (phoneScreen) {
+      phoneScreen.style.transform = saved.phoneTransform;
+      if (saved.phoneTicketScale) {
+        phoneScreen.style.setProperty('--ticket-scale', saved.phoneTicketScale);
+      } else {
+        phoneScreen.style.removeProperty('--ticket-scale');
       }
     }
 
